@@ -1,26 +1,44 @@
 package config
 
 import (
-	"log/slog"
 	"os"
+
+	"pharmacy-pos/pkg/logger"
 
 	"gopkg.in/yaml.v3"
 )
 
-type config struct {
-	service struct {
-		app_mode    string `yaml:"app_mode"`
-		server_port int    `yaml:"server_port"`
+type Config struct {
+	Service struct {
+		AppMode    string `yaml:"app_mode"`
+		ServerPort int    `yaml:"server_port"`
 	}
-	mysql struct {
-		host   string `yaml:"host"`
-		port   int    `yaml:"port"`
-		user   string `yaml:"user"`
-		passwd string `yaml:"passwd"`
-		dbname string `yaml:"dbname"`
+	MySQL struct {
+		Host   string `yaml:"host"`
+		Port   int    `yaml:"port"`
+		User   string `yaml:"user"`
+		Passwd string `yaml:"passwd"`
+		DBName string `yaml:"dbname"`
 	}
 }
 
-func Load() {
+var AppConfig Config
 
+func Load() {
+	logger.Init()
+	log := logger.GetLogger()
+	file, err := os.Open("config.yaml")
+	if err != nil {
+		log.Info("打开配置文件失败")
+		return
+	}
+
+	decoder := yaml.NewDecoder(file)
+	err = decoder.Decode(&AppConfig)
+	if err != nil {
+		log.Info("读取配置文件内容失败")
+		return
+	}
+
+	file.Close()
 }
