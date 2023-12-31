@@ -11,7 +11,7 @@ var log = logrus.New()
 func Init() {
 	logFile, err := os.OpenFile("logs/app.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		log.WithError(err).Fatal("打开日志文件失败")
+		panic("打开日志文件失败")
 	}
 
 	log.Out = logFile

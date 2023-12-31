@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -26,15 +25,13 @@ var AppConfig Config
 func Load() {
 	file, err := os.Open("/config/workspace/sources/golang/Pharmacy-POS/config.yaml")
 	if err != nil {
-		fmt.Println("打开配置文件失败")
-		return
+		panic("打开配置文件失败")
 	}
 
 	decoder := yaml.NewDecoder(file)
 	err = decoder.Decode(&AppConfig)
 	if err != nil {
-		fmt.Println("读取配置文件内容失败")
-		return
+		panic("读取配置文件内容失败")
 	}
 
 	file.Close()
