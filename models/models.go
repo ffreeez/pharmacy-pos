@@ -6,108 +6,72 @@ import (
 	"gorm.io/gorm"
 )
 
-// 用户表（Users）数据模型
-type User struct {
-	gorm.Model
-	UserID   uint `gorm:"primaryKey"`
-	UserName string
-	Password string
-	Role     string
-}
-
-// 药品表（Drugs）数据模型
+// Drug 药品表
 type Drug struct {
 	gorm.Model
-	DrugID        uint `gorm:"primaryKey"`
-	Name          string
-	Category      string
-	Price         float64
-	Description   string
-	StockQuantity int
+	DrugName     string
+	Description  string
+	CategoryID   uint
+	Category     Category `gorm:"foreignKey:CategoryID"`
+	Price        float64  // 当前价格
+	DiscountRate float64  // 当前折扣率
+	Inventory    uint     // 库存数量
 }
 
-// 价格表（Prices）数据模型
-type Price struct {
+// Category 分类表
+type Category struct {
 	gorm.Model
-	PriceID uint `gorm:"primaryKey"`
-	DrugID  uint `gorm:"foreignKey:DrugID"`
-	Price   float64
+	CategoryName string
+	Drugs        []Drug `gorm:"foreignKey:CategoryID"`
 }
 
-// 折扣表（Discounts）数据模型
-type Discount struct {
-	gorm.Model
-	DiscountID   uint `gorm:"primaryKey"`
-	DrugID       uint `gorm:"foreignKey:DrugID"`
-	DiscountRate float64
-	StartDate    time.Time
-	EndDate      time.Time
-}
-
-// 优惠券表（Coupons）数据模型
-type Coupon struct {
-	gorm.Model
-	CouponID          uint `gorm:"primaryKey"`
-	Type              string
-	DiscountValue     float64
-	MinPurchaseAmount float64
-	StartDate         time.Time
-	EndDate           time.Time
-}
-
-// 会员表（Members）数据模型
-type Member struct {
-	gorm.Model
-	MemberID    uint `gorm:"primaryKey"`
-	Name        string
-	PhoneNumber string
-	Points      int
-	JoinDate    time.Time
-}
-
-// 订单表（Sales）数据模型
+// Sale 订单表
 type Sale struct {
 	gorm.Model
-	SaleID         uint `gorm:"primaryKey"`
 	UserID         uint
 	User           User `gorm:"foreignKey:UserID"`
 	MemberID       uint
-	Member         Member `gorm:"foreignKey:MemberID"`
-	TotalAmount    float64
-	DiscountAmount float64
-	FinalAmount    float64
-	SaleDate       time.Time
+	Member         Member       `gorm:"foreignKey:MemberID"`
+	TotalAmount    float64      // 订单总金额
+	DiscountAmount float64      // 订单折扣金额
+	FinalAmount    float64      // 订单最终金额
+	SaleDate       time.Time    // 销售日期
+	SaleDetails    []SaleDetail `gorm:"foreignKey:SaleID"`
 }
 
-// 订单详情表（SaleDetails）数据模型
+// SaleDetail 订单详情表
 type SaleDetail struct {
 	gorm.Model
-	SaleDetailID uint `gorm:"primaryKey"`
 	SaleID       uint
 	Sale         Sale `gorm:"foreignKey:SaleID"`
 	DrugID       uint
-	Drug         Drug `gorm:"foreignKey:DrugID"`
-	Quantity     int
-	PricePerUnit float64
+	Drug         Drug    `gorm:"foreignKey:DrugID"`
+	Quantity     int     // 购买数量
+	PricePerUnit float64 // 单价
 }
 
-// 库存表（Inventory）数据模型
-type Inventory struct {
+// Member 会员表
+type Member struct {
 	gorm.Model
-	InventoryID uint `gorm:"primaryKey"`
-	DrugID      uint
-	Drug        Drug `gorm:"foreignKey:DrugID"`
-	Quantity    int
-	LastUpdated time.Time
+	Name        string
+	PhoneNumber string
+	Points      int // 会员积分
 }
 
-// 操作日志表（Logs）数据模型
+// User 用户表
+type User struct {
+	gorm.Model
+	UserName string
+	Password string
+	IsAdmin  bool // 是否为管理员（店长）
+}
+
+// Log 操作日志表
 type Log struct {
 	gorm.Model
-	LogID       uint `gorm:"primaryKey"`
 	UserID      uint
-	User        User `gorm:"foreignKey:UserID"`
-	ActionType  string
-	Description string
-	ActionDate  time.Time
+	User        User      `gorm:"foreignKey:UserID"`
+	ActionType  string    // 操作类型
+	Description string    // 操作描述
+	ActionDate  time.Time // 操作日期
 }
