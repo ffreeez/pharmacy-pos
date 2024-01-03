@@ -2,7 +2,7 @@ package repository
 
 import (
 	"pharmacy-pos/pkg/db/models"
-	logger "pharmacy-pos/pkg/util"
+	logger "pharmacy-pos/pkg/util/logger"
 
 	"gorm.io/gorm"
 )

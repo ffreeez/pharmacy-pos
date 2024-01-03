@@ -3,18 +3,29 @@ package main
 import (
 	"pharmacy-pos/pkg/config"
 	"pharmacy-pos/pkg/db"
-	"pharmacy-pos/pkg/handlers"
+	UserHandler "pharmacy-pos/pkg/handlers"
+	"pharmacy-pos/pkg/util/logger"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
-	db.InitDB()
+	logger.Init()
+	database, err := db.InitDB()
+	if err != nil {
+		panic("数据库初始化失败")
+	}
 	config.Load()
+
 	router := gin.Default()
-	router.GET("/users/:id", user_handler..GetUserByID)
+
+	userHandler := UserHandler.NewUserHandler(database)
+
+	router.GET("/users/:id", userHandler.GetUserByID)
 	router.POST("/users", userHandler.CreateUser)
 	router.PUT("/users/:id", userHandler.UpdateUser)
 	router.DELETE("/users/:id", userHandler.DeleteUserByID)
+
 	router.Run(":8080")
 }

@@ -1,11 +1,11 @@
-package user_handler
+package UserHandler
 
 import (
 	"strconv"
 
 	"pharmacy-pos/pkg/db/models"
 	"pharmacy-pos/pkg/service"
-	"pharmacy-pos/pkg/util"
+	"pharmacy-pos/pkg/util/response"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -27,68 +27,68 @@ func NewUserHandler(db *gorm.DB) *UserHandler {
 func (uh *UserHandler) GetUserByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		util.BadRequest(c, "Invalid user ID")
+		response.BadRequest(c, "Invalid user ID")
 		return
 	}
 
 	userID := uint(id)
 	user, err := uh.UserService.GetUserByID(userID)
 	if err != nil {
-		util.InternalServerError(c, "Failed to get user")
+		response.InternalServerError(c, "Failed to get user")
 		return
 	}
 
-	util.OK(c, user)
+	response.OK(c, user)
 }
 
 // CreateUser 创建新用户
 func (uh *UserHandler) CreateUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		util.BadRequest(c, "Invalid input")
+		response.BadRequest(c, "Invalid input")
 		return
 	}
 
 	err := uh.UserService.CreateUser(&user)
 	if err != nil {
-		util.InternalServerError(c, "Failed to create user")
+		response.InternalServerError(c, "Failed to create user")
 		return
 	}
 
-	util.Created(c, user)
+	response.Created(c, user)
 }
 
 // UpdateUser 更新用户信息
 func (uh *UserHandler) UpdateUser(c *gin.Context) {
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
-		util.BadRequest(c, "Invalid input")
+		response.BadRequest(c, "Invalid input")
 		return
 	}
 
 	err := uh.UserService.UpdateUser(&user)
 	if err != nil {
-		util.InternalServerError(c, "Failed to update user")
+		response.InternalServerError(c, "Failed to update user")
 		return
 	}
 
-	util.OK(c, user)
+	response.OK(c, user)
 }
 
 // DeleteUserByID 根据ID删除用户
 func (uh *UserHandler) DeleteUserByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		util.BadRequest(c, "Invalid user ID")
+		response.BadRequest(c, "Invalid user ID")
 		return
 	}
 
 	userID := uint(id)
 	err = uh.UserService.DeleteUserByID(userID)
 	if err != nil {
-		util.InternalServerError(c, "Failed to delete user")
+		response.InternalServerError(c, "Failed to delete user")
 		return
 	}
 
-	util.OK(c, gin.H{"message": "User deleted successfully"})
+	response.OK(c, gin.H{"message": "User deleted successfully"})
 }
