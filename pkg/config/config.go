@@ -23,6 +23,7 @@ type Config struct {
 
 var AppConfig Config
 
+// 加载配置文件
 func Load() {
 	file, err := os.Open("/config/workspace/sources/golang/Pharmacy-POS/configs/config.yaml")
 	if err != nil {
@@ -38,6 +39,7 @@ func Load() {
 	file.Close()
 }
 
+// 从配置文件获取数据库连接
 func GetDb() (dsn string) {
 	dsn = AppConfig.MySQL.User + ":" + AppConfig.MySQL.Passwd + "@tcp("
 	dsn += AppConfig.MySQL.Host + ":" + strconv.Itoa(AppConfig.MySQL.Port) + ")/"

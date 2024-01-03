@@ -11,6 +11,7 @@ import (
 
 var DB *gorm.DB
 
+// 初始化数据库
 func InitDB() {
 
 	logs := logger.GetLogger()
@@ -23,6 +24,8 @@ func InitDB() {
 	if err != nil {
 		logs.Error("数据库连接失败")
 	}
+
+	logs.Info("数据库连接成功")
 
 	DB.AutoMigrate(&models.User{})
 }
