@@ -43,6 +43,6 @@ func Load() {
 func GetDb() (dsn string) {
 	dsn = AppConfig.MySQL.User + ":" + AppConfig.MySQL.Passwd + "@tcp("
 	dsn += AppConfig.MySQL.Host + ":" + strconv.Itoa(AppConfig.MySQL.Port) + ")/"
-	dsn += AppConfig.MySQL.DBName
+	dsn += AppConfig.MySQL.DBName + "?charset=utf8&parseTime=true"
 	return dsn
 }

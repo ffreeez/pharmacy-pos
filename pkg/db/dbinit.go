@@ -2,7 +2,7 @@ package db
 
 import (
 	"pharmacy-pos/pkg/config"
-	"pharmacy-pos/pkg/db/models"
+	UserModel "pharmacy-pos/pkg/db/models"
 	logger "pharmacy-pos/pkg/util/logger"
 
 	"gorm.io/driver/mysql"
@@ -25,7 +25,7 @@ func InitDB() (database *gorm.DB, err error) {
 		return nil, err
 	}
 
-	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(&UserModel.User{})
 	logs.Info("数据库连接成功")
 
 	return DB, nil

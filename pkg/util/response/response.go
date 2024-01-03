@@ -25,3 +25,8 @@ func BadRequest(c *gin.Context, message string) {
 func InternalServerError(c *gin.Context, message string) {
 	c.JSON(http.StatusInternalServerError, gin.H{"error": message})
 }
+
+// Unauthorized 发送 401 未授权的响应
+func Unauthorized(c *gin.Context, message string) {
+	c.JSON(http.StatusUnauthorized, gin.H{"error": message})
+}

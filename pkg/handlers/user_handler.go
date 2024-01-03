@@ -3,7 +3,7 @@ package UserHandler
 import (
 	"strconv"
 
-	"pharmacy-pos/pkg/db/models"
+	UserModel "pharmacy-pos/pkg/db/models"
 	"pharmacy-pos/pkg/service"
 	"pharmacy-pos/pkg/util/response"
 
@@ -43,7 +43,7 @@ func (uh *UserHandler) GetUserByID(c *gin.Context) {
 
 // CreateUser 创建新用户
 func (uh *UserHandler) CreateUser(c *gin.Context) {
-	var user models.User
+	var user UserModel.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
@@ -60,7 +60,7 @@ func (uh *UserHandler) CreateUser(c *gin.Context) {
 
 // UpdateUser 更新用户信息
 func (uh *UserHandler) UpdateUser(c *gin.Context) {
-	var user models.User
+	var user UserModel.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
@@ -91,4 +91,25 @@ func (uh *UserHandler) DeleteUserByID(c *gin.Context) {
 	}
 
 	response.OK(c, gin.H{"message": "User deleted successfully"})
+}
+
+// Login 处理用户登录请求
+func (uh *UserHandler) Login(c *gin.Context) {
+	var loginInfo struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	if err := c.ShouldBindJSON(&loginInfo); err != nil {
+		response.BadRequest(c, "Invalid input")
+		return
+	}
+
+	user, err := uh.UserService.AuthenticateUser(loginInfo.Username, loginInfo.Password)
+	if err != nil {
+		response.Unauthorized(c, "Invalid username or password")
+		return
+	}
+
+	response.OK(c, gin.H{"user": user})
 }

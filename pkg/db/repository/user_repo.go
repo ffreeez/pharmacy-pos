@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"pharmacy-pos/pkg/db/models"
+	UserModel "pharmacy-pos/pkg/db/models"
 	logger "pharmacy-pos/pkg/util/logger"
 
 	"gorm.io/gorm"
@@ -10,8 +10,8 @@ import (
 var logs = logger.GetLogger()
 
 // GetUserByID 根据用户ID获取用户
-func GetUserByID(db *gorm.DB, id uint) (*models.User, error) {
-	user := &models.User{}
+func GetUserByID(db *gorm.DB, id uint) (*UserModel.User, error) {
+	user := &UserModel.User{}
 	result := db.First(user, id)
 	if result.Error != nil {
 		logs.Errorf("根据用户ID获取用户失败, ID: %d", id)
@@ -22,7 +22,13 @@ func GetUserByID(db *gorm.DB, id uint) (*models.User, error) {
 }
 
 // CreateUser 创建新用户
-func CreateUser(db *gorm.DB, user *models.User) error {
+func CreateUser(db *gorm.DB, user *UserModel.User) error {
+	var HashPassworderr error
+	user.Password, HashPassworderr = UserModel.HashPassword(user.Password)
+	if HashPassworderr != nil {
+		logs.Errorf("处理用户密码失败")
+		return HashPassworderr
+	}
 	result := db.Create(user)
 	if result.Error != nil {
 		logs.Errorf("创建新用户失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
@@ -33,7 +39,7 @@ func CreateUser(db *gorm.DB, user *models.User) error {
 }
 
 // UpdateUser 更新用户信息
-func UpdateUser(db *gorm.DB, user *models.User) error {
+func UpdateUser(db *gorm.DB, user *UserModel.User) error {
 	result := db.Save(user)
 	if result.Error != nil {
 		logs.Errorf("更新用户信息失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
@@ -45,11 +51,23 @@ func UpdateUser(db *gorm.DB, user *models.User) error {
 
 // DeleteUserByID 根据ID删除用户
 func DeleteUserByID(db *gorm.DB, id uint) error {
-	result := db.Delete(&models.User{}, id)
+	result := db.Delete(&UserModel.User{}, id)
 	if result.Error != nil {
 		logs.Errorf("根据ID删除用户失败, id: %d", id)
 		return result.Error
 	}
 	logs.Infof("根据ID删除用户成功, id: %d", id)
 	return result.Error
+}
+
+// GetUserByUserName 根据用户名查找用户
+func GetUserByUserName(db *gorm.DB, username string) (*UserModel.User, error) {
+	user := &UserModel.User{}
+	result := db.Where("user_name = ?", username).First(user)
+	if result.Error != nil {
+		logs.Errorf("根据用户名查找用户失败, username: %s", username)
+		return nil, result.Error
+	}
+	logs.Infof("根据用户名查找用户成功, username: %s", username)
+	return user, nil
 }
