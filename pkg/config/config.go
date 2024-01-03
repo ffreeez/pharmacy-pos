@@ -23,7 +23,7 @@ type Config struct {
 var AppConfig Config
 
 func Load() {
-	file, err := os.Open("/config/workspace/sources/golang/Pharmacy-POS/config.yaml")
+	file, err := os.Open("/config/workspace/sources/golang/Pharmacy-POS/config/config.yaml")
 	if err != nil {
 		panic("打开配置文件失败")
 	}
