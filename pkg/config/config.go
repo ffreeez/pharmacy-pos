@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 
 	"gopkg.in/yaml.v3"
 )
@@ -35,4 +36,11 @@ func Load() {
 	}
 
 	file.Close()
+}
+
+func GetDb() (dsn string) {
+	dsn = AppConfig.MySQL.User + ":" + AppConfig.MySQL.Passwd + "@tcp("
+	dsn += AppConfig.MySQL.Host + ":" + strconv.Itoa(AppConfig.MySQL.Port) + ")/"
+	dsn += AppConfig.MySQL.DBName
+	return dsn
 }
