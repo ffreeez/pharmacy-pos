@@ -30,3 +30,7 @@ func InternalServerError(c *gin.Context, message string) {
 func Unauthorized(c *gin.Context, message string) {
 	c.JSON(http.StatusUnauthorized, gin.H{"error": message})
 }
+// Conflict 发丝部分 409 冲突响应
+func Conflict(c *gin.Context, message string) {
+	c.JSON(http.StatusConflict, gin.H{"error": message})
+}

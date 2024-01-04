@@ -2,9 +2,9 @@ package jwt
 
 import (
 	"net/http"
-	"time"
-	"strings"
 	"pharmacy-pos/pkg/config"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
@@ -33,7 +33,7 @@ func GenerateToken(username string) (string, error) {
 	claims := &Claims{
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(3 * time.Hour * time.Duration(1))),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(12 * time.Hour * time.Duration(1))),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		}}
@@ -57,7 +57,6 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Split the authHeader string by space
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization header must be Bearer token"})

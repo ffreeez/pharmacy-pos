@@ -1,8 +1,8 @@
 package config
 
 import (
+	"fmt"
 	"os"
-	"strconv"
 
 	"gopkg.in/yaml.v3"
 )
@@ -20,7 +20,8 @@ type Config struct {
 		DBName string `yaml:"dbname"`
 	}
 	Jwt struct {
-		Key string `yaml:"key"`
+		Key  string `yaml:"key"`
+		Cost int    `yaml:"cost"`
 	}
 }
 
@@ -44,8 +45,13 @@ func Load() {
 
 // 从配置文件获取数据库连接
 func GetDb() (dsn string) {
-	dsn = AppConfig.MySQL.User + ":" + AppConfig.MySQL.Passwd + "@tcp("
-	dsn += AppConfig.MySQL.Host + ":" + strconv.Itoa(AppConfig.MySQL.Port) + ")/"
-	dsn += AppConfig.MySQL.DBName + "?charset=utf8&parseTime=true"
+	dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=true",
+		AppConfig.MySQL.User,
+		AppConfig.MySQL.Passwd,
+		AppConfig.MySQL.Host,
+		AppConfig.MySQL.Port,
+		AppConfig.MySQL.DBName,
+	)
+
 	return dsn
 }
