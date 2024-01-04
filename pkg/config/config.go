@@ -19,6 +19,9 @@ type Config struct {
 		Passwd string `yaml:"passwd"`
 		DBName string `yaml:"dbname"`
 	}
+	Jwt struct {
+		Key string `yaml:"key"`
+	}
 }
 
 var AppConfig Config

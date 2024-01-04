@@ -10,3 +10,6 @@ mysql:
   user: root
   passwd: root
   dbname: pharmacy-pos-database
+
+jwt:
+  key: test_jwt_key
