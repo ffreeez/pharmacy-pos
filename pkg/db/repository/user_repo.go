@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	UserModel "pharmacy-pos/pkg/db/models"
 	logger "pharmacy-pos/pkg/util/logger"
 
@@ -23,13 +24,25 @@ func GetUserByID(db *gorm.DB, id uint) (*UserModel.User, error) {
 
 // CreateUser 创建新用户
 func CreateUser(db *gorm.DB, user *UserModel.User) error {
+
+	var existingUser UserModel.User
+	result := db.Where("user_name = ?", user.UserName).First(&existingUser)
+	if result.Error == nil {
+		logs.Errorf("用户名已存在, username: %s", user.UserName)
+		result.Error = errors.New("用户名已存在")
+		return result.Error
+	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		logs.Errorf("发生其他错误")
+		return result.Error
+	}
+
 	var HashPassworderr error
 	user.Password, HashPassworderr = UserModel.HashPassword(user.Password)
 	if HashPassworderr != nil {
 		logs.Errorf("处理用户密码失败")
 		return HashPassworderr
 	}
-	result := db.Create(user)
+	result = db.Create(user)
 	if result.Error != nil {
 		logs.Errorf("创建新用户失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
 		return result.Error
@@ -40,7 +53,14 @@ func CreateUser(db *gorm.DB, user *UserModel.User) error {
 
 // UpdateUser 更新用户信息
 func UpdateUser(db *gorm.DB, user *UserModel.User) error {
-	result := db.Save(user)
+	var hasherr error
+	user.Password, hasherr = UserModel.HashPassword(user.Password)
+	if hasherr != nil {
+		logs.Errorf("更新用户信息时，生成hash密码失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
+		return hasherr
+	}
+
+	result := db.Model(user).Omit("CreatedAt").Save(user)
 	if result.Error != nil {
 		logs.Errorf("更新用户信息失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
 		return result.Error

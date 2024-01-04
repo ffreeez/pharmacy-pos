@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	UserModel "pharmacy-pos/pkg/db/models"
+	jwt "pharmacy-pos/pkg/middleware"
 	"pharmacy-pos/pkg/service"
 	"pharmacy-pos/pkg/util/response"
 
@@ -50,23 +51,37 @@ func (uh *UserHandler) CreateUser(c *gin.Context) {
 	}
 
 	err := uh.UserService.CreateUser(&user)
-	if err != nil {
-		response.InternalServerError(c, "Failed to create user")
-		return
-	}
+    if err != nil {
+        if err.Error() == "用户名已存在" {
+            response.InternalServerError(c, "Username already exists")
+        } else {
+            response.InternalServerError(c, "Failed to create user")
+        }
+        return
+    }
 
 	response.Created(c, user)
 }
 
 // UpdateUser 更新用户信息
 func (uh *UserHandler) UpdateUser(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "Invalid user ID")
+		return
+	}
+
 	var user UserModel.User
+	userID := uint(id)
+	user.ID = userID
+	println(user.ID)
+
 	if err := c.ShouldBindJSON(&user); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
 	}
 
-	err := uh.UserService.UpdateUser(&user)
+	err = uh.UserService.UpdateUser(&user)
 	if err != nil {
 		response.InternalServerError(c, "Failed to update user")
 		return
@@ -111,5 +126,10 @@ func (uh *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	response.OK(c, gin.H{"user": user})
+	tokenString, err := jwt.GenerateToken(user.UserName)
+	if err != nil {
+		response.Unauthorized(c, "Login failed, token generated fail")
+		return
+	}
+	response.OK(c, gin.H{"token": tokenString})
 }
