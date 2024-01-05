@@ -1,0 +1,3 @@
+[submodule "pharmacy-pos-vue"]
+	path = pharmacy-pos-vue
+	url = https://github.com/ffreeez/pharmacy-pos-vue
