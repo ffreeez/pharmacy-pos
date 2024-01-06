@@ -10,7 +10,7 @@ import (
 // User 用户表
 type User struct {
 	gorm.Model
-	Username string
+	UserName string
 	Password string
 	IsAdmin  bool
 }

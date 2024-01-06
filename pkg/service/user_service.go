@@ -1,4 +1,4 @@
-package service
+package userservice
 
 import (
 	UserModel "pharmacy-pos/pkg/db/models"

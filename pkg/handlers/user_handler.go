@@ -5,7 +5,7 @@ import (
 
 	usermodel "pharmacy-pos/pkg/db/models"
 	"pharmacy-pos/pkg/middleware/jwt"
-	"pharmacy-pos/pkg/service"
+	userservice "pharmacy-pos/pkg/service"
 	"pharmacy-pos/pkg/util/response"
 
 	"github.com/gin-gonic/gin"
@@ -14,13 +14,13 @@ import (
 
 // UserHandler 处理用户相关的 HTTP 请求
 type UserHandler struct {
-	UserService *service.UserService
+	UserService *userservice.UserService
 }
 
 // NewUserHandler 创建一个新的 UserHandler 实例
 func NewUserHandler(db *gorm.DB) *UserHandler {
 	return &UserHandler{
-		UserService: service.NewUserService(db),
+		UserService: userservice.NewUserService(db),
 	}
 }
 
@@ -125,7 +125,7 @@ func (uh *UserHandler) Login(c *gin.Context) {
 		return
 	}
 
-	tokenString, err := jwt.GenerateToken(user.Username)
+	tokenString, err := jwt.GenerateToken(user.UserName)
 	if err != nil {
 		response.Unauthorized(c, "Login failed, token generated fail")
 		return

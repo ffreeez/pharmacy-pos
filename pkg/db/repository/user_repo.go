@@ -2,7 +2,7 @@ package userrepo
 
 import (
 	"errors"
-	usermodel "pharmacy-pos/pkg/db/models"
+	UserModel "pharmacy-pos/pkg/db/models"
 	logger "pharmacy-pos/pkg/util/logger"
 
 	"pharmacy-pos/pkg/util/e"
@@ -13,8 +13,8 @@ import (
 var logs = logger.GetLogger()
 
 // GetUserByID 根据用户ID获取用户
-func GetUserByID(db *gorm.DB, id uint) (*usermodel.User, error) {
-	user := &usermodel.User{}
+func GetUserByID(db *gorm.DB, id uint) (*UserModel.User, error) {
+	user := &UserModel.User{}
 	result := db.First(user, id)
 	if result.Error != nil {
 		logs.Errorf("根据用户ID获取用户失败, ID: %d", id)
@@ -25,12 +25,12 @@ func GetUserByID(db *gorm.DB, id uint) (*usermodel.User, error) {
 }
 
 // CreateUser 创建新用户
-func CreateUser(db *gorm.DB, user *usermodel.User) error {
+func CreateUser(db *gorm.DB, user *UserModel.User) error {
 
-	var existingUser usermodel.User
-	result := db.Where("user_name = ?", user.Username).First(&existingUser)
+	var existingUser UserModel.User
+	result := db.Where("user_name = ?", user.UserName).First(&existingUser)
 	if result.Error == nil {
-		logs.Errorf("用户名已存在, username: %s", user.Username)
+		logs.Errorf("用户名已存在, username: %s", user.UserName)
 		result.Error = e.ErrUsernameExists
 		return result.Error
 	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -39,41 +39,41 @@ func CreateUser(db *gorm.DB, user *usermodel.User) error {
 	}
 
 	var HashPassworderr error
-	user.Password, HashPassworderr = usermodel.HashPassword(user.Password)
+	user.Password, HashPassworderr = UserModel.HashPassword(user.Password)
 	if HashPassworderr != nil {
 		logs.Errorf("处理用户密码失败")
 		return HashPassworderr
 	}
 	result = db.Create(user)
 	if result.Error != nil {
-		logs.Errorf("创建新用户失败, username: %s, isadmin: %t", user.Username, user.IsAdmin)
+		logs.Errorf("创建新用户失败, username: %s, isadmin: %t", user.UserName, user.IsAdmin)
 		return result.Error
 	}
-	logs.Infof("创建新用户成功, username: %s, isadmin: %t", user.Username, user.IsAdmin)
+	logs.Infof("创建新用户成功, username: %s, isadmin: %t", user.UserName, user.IsAdmin)
 	return result.Error
 }
 
 // UpdateUser 更新用户信息
-func UpdateUser(db *gorm.DB, user *usermodel.User) error {
+func UpdateUser(db *gorm.DB, user *UserModel.User) error {
 	var hasherr error
-	user.Password, hasherr = usermodel.HashPassword(user.Password)
+	user.Password, hasherr = UserModel.HashPassword(user.Password)
 	if hasherr != nil {
-		logs.Errorf("更新用户信息时, 生成hash密码失败, username: %s, password: %s, isadmin: %t", user.Username, user.Password, user.IsAdmin)
+		logs.Errorf("更新用户信息时, 生成hash密码失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
 		return hasherr
 	}
 
 	result := db.Model(user).Omit("CreatedAt").Save(user)
 	if result.Error != nil {
-		logs.Errorf("更新用户信息失败, username: %s, password: %s, isadmin: %t", user.Username, user.Password, user.IsAdmin)
+		logs.Errorf("更新用户信息失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
 		return result.Error
 	}
-	logs.Infof("更新用户信息成功, username: %s, password: %s, isadmin: %t", user.Username, user.Password, user.IsAdmin)
+	logs.Infof("更新用户信息成功, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
 	return result.Error
 }
 
 // DeleteUserByID 根据ID删除用户
 func DeleteUserByID(db *gorm.DB, id uint) error {
-	result := db.Delete(&usermodel.User{}, id)
+	result := db.Delete(&UserModel.User{}, id)
 	if result.Error != nil {
 		logs.Errorf("根据ID删除用户失败, id: %d", id)
 		return result.Error
@@ -83,8 +83,8 @@ func DeleteUserByID(db *gorm.DB, id uint) error {
 }
 
 // GetUserByUserName 根据用户名查找用户
-func GetUserByUserName(db *gorm.DB, username string) (*usermodel.User, error) {
-	user := &usermodel.User{}
+func GetUserByUserName(db *gorm.DB, username string) (*UserModel.User, error) {
+	user := &UserModel.User{}
 	result := db.Where("user_name = ?", username).First(user)
 	if result.Error != nil {
 		logs.Errorf("根据用户名查找用户失败, username: %s", username)
