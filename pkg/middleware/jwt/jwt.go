@@ -1,6 +1,8 @@
 package jwt
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"pharmacy-pos/pkg/config"
 	"strings"
@@ -87,4 +89,30 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		c.Set("username", claims.Username)
 		c.Next()
 	}
+}
+
+func ParseToken(tokenString string) (string, error) {
+	if len(jwtKey) == 0 {
+		InitJWTKey()
+	}
+
+	claims := &Claims{}
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		// 确保令牌的签名方法是我们所期望的
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return jwtKey, nil
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	if !token.Valid {
+		return "", errors.New("invalid token")
+	}
+
+	return claims.Username, nil
 }

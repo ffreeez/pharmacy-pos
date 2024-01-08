@@ -28,6 +28,8 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	protected.PUT("/update/:id", userHandler.UpdateUser)
 	protected.DELETE("/delete/:id", userHandler.DeleteUserByID)
 
+	protected.GET("/info", userHandler.GetInfo)
+
 	return router
 }
 

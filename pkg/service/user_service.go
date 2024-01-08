@@ -52,3 +52,12 @@ func (us *UserService) AuthenticateUser(username, password string) (*UserModel.U
 
 	return user, nil
 }
+
+// GetUserByUserName 根据用户名获取user
+func (us *UserService) GetUserByUserName(username string) (*UserModel.User, error) {
+	user, err := UserRepo.GetUserByUserName(us.DB, username)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
