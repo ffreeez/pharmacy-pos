@@ -164,3 +164,16 @@ func (uh *UserHandler) GetInfo(c *gin.Context) {
 	// 返回用户信息
 	response.OK(c, gin.H{"name": user.UserName, "avatar": "testavatar"}, "success")
 }
+
+// GetAllUserInfo 获取所有的用户信息
+func (uh *UserHandler) GetAllUserInfo(c *gin.Context) {
+	users, err := uh.UserService.GetAllUserInfo()
+	if err != nil {
+		// 如果获取用户信息时出错，返回内部服务器错误
+		response.InternalServerError(c, "Failed to get all user info")
+		return
+	}
+
+	// 如果成功获取到用户信息，返回OK状态码和用户列表
+	response.OK(c, users, "success")
+}

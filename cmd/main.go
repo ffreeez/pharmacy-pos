@@ -27,6 +27,7 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	protected.GET("/get/:id", userHandler.GetUserByID)
 	protected.PUT("/update/:id", userHandler.UpdateUser)
 	protected.DELETE("/delete/:id", userHandler.DeleteUserByID)
+	protected.GET("/getall", userHandler.GetAllUserInfo)
 
 	protected.GET("/info", userHandler.GetInfo)
 
@@ -46,6 +47,3 @@ func main() {
 
 	router.Run(":8080")
 }
-
-// TODO
-// 修改http返回内容

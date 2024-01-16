@@ -61,3 +61,12 @@ func (us *UserService) GetUserByUserName(username string) (*UserModel.User, erro
 	}
 	return user, nil
 }
+
+// GetAllUserInfo 获取所有的用户信息
+func (us *UserService) GetAllUserInfo() ([]UserModel.User, error) {
+	users, err := UserRepo.GetAllUserInfo(us.DB)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}

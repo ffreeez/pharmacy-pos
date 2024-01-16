@@ -93,3 +93,15 @@ func GetUserByUserName(db *gorm.DB, username string) (*UserModel.User, error) {
 	logs.Infof("根据用户名查找用户成功, username: %s", username)
 	return user, nil
 }
+
+// GetAllUserInfo 获取所有的用户信息
+func GetAllUserInfo(db *gorm.DB) ([]UserModel.User, error) {
+	var users []UserModel.User
+	result := db.Find(&users)
+	if result.Error != nil {
+		logs.Errorf("获取所有用户信息失败: %v", result.Error)
+		return nil, result.Error
+	}
+	logs.Infof("获取所有用户信息成功")
+	return users, nil
+}
