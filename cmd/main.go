@@ -47,3 +47,11 @@ func main() {
 
 	router.Run(":8080")
 }
+
+// TODO
+// 重构Users相关内容，将handler中的不合理结构转移到service
+// 完成所有数据模型的repo
+// 整理数据模型文档，确定数据模型
+// 整理api文档，确定最基础的api
+// 完成所有数据模型的service
+// 完成所有数据模型的handler

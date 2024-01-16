@@ -1,8 +1,8 @@
 package userservice
 
 import (
-	"pharmacy-pos/pkg/db/models/user"
-	UserRepo "pharmacy-pos/pkg/db/repository"
+	usermodel "pharmacy-pos/pkg/db/models/user"
+	userrepo "pharmacy-pos/pkg/db/repository/user"
 
 	"gorm.io/gorm"
 )
@@ -19,32 +19,32 @@ func NewUserService(db *gorm.DB) *UserService {
 
 // GetUserByID 根据用户ID获取用户
 func (us *UserService) GetUserByID(id uint) (*usermodel.User, error) {
-	return UserRepo.GetUserByID(us.DB, id)
+	return userrepo.GetUserByID(us.DB, id)
 }
 
 // CreateUser 创建新用户
 func (us *UserService) CreateUser(user *usermodel.User) error {
-	return UserRepo.CreateUser(us.DB, user)
+	return userrepo.CreateUser(us.DB, user)
 }
 
 // ResetPassword 重置用户密码
 func (us *UserService) ResetPassword(password string, id uint) error {
-	return UserRepo.ResetPassword(us.DB, password, id)
+	return userrepo.ResetPassword(us.DB, password, id)
 }
 
 // UpdateIsAdmin 修改用户权限
 func (us *UserService) UpdateIsAdmin(isadmin bool, id uint) error {
-	return UserRepo.UpdateIsAdmin(us.DB, isadmin, id)
+	return userrepo.UpdateIsAdmin(us.DB, isadmin, id)
 }
 
 // DeleteUserByID 根据ID删除用户
 func (us *UserService) DeleteUserByID(id uint) error {
-	return UserRepo.DeleteUserByID(us.DB, id)
+	return userrepo.DeleteUserByID(us.DB, id)
 }
 
 // AuthenticateUser 验证用户的用户名和密码
 func (us *UserService) AuthenticateUser(username, password string) (*usermodel.User, error) {
-	user, err := UserRepo.GetUserByUserName(us.DB, username)
+	user, err := userrepo.GetUserByUserName(us.DB, username)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (us *UserService) AuthenticateUser(username, password string) (*usermodel.U
 
 // GetUserByUserName 根据用户名获取user
 func (us *UserService) GetUserByUserName(username string) (*usermodel.User, error) {
-	user, err := UserRepo.GetUserByUserName(us.DB, username)
+	user, err := userrepo.GetUserByUserName(us.DB, username)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (us *UserService) GetUserByUserName(username string) (*usermodel.User, erro
 
 // GetAllUserInfo 获取所有的用户信息
 func (us *UserService) GetAllUserInfo() ([]usermodel.User, error) {
-	users, err := UserRepo.GetAllUserInfo(us.DB)
+	users, err := userrepo.GetAllUserInfo(us.DB)
 	if err != nil {
 		return nil, err
 	}
