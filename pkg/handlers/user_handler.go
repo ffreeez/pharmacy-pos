@@ -64,30 +64,56 @@ func (uh *UserHandler) CreateUser(c *gin.Context) {
 	response.Created(c, user, "success")
 }
 
-// UpdateUser 更新用户信息
-func (uh *UserHandler) UpdateUser(c *gin.Context) {
+// UpdateIsAdmin 修改用户权限
+func (uh *UserHandler) UpdateIsAdmin(c *gin.Context) {
+	var req struct {
+		IsAdmin bool `json:"is_admin"`
+	}
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		response.BadRequest(c, "Invalid user ID")
 		return
 	}
 
-	var user usermodel.User
-	userID := uint(id)
-	user.ID = userID
-
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
 	}
 
-	err = uh.UserService.UpdateUser(&user)
+	userID := uint(id)
+	err = uh.UserService.UpdateIsAdmin(req.IsAdmin, userID)
 	if err != nil {
 		response.InternalServerError(c, "Failed to update user")
 		return
 	}
 
-	response.OK(c, user, "success")
+	response.OK(c, gin.H{"is_admin": req.IsAdmin}, "success")
+}
+
+// ResetPassword 重设用户密码
+func (uh *UserHandler) ResetPassword(c *gin.Context) {
+	var req struct {
+		Password string `json:"password"`
+	}
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "Invalid user ID")
+		return
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid input")
+		return
+	}
+
+	userID := uint(id)
+	err = uh.UserService.ResetPassword(req.Password, userID)
+	if err != nil {
+		response.InternalServerError(c, "Failed to reset password")
+		return
+	}
+
+	response.OK(c, nil, "Password reset successfully")
 }
 
 // DeleteUserByID 根据ID删除用户
@@ -165,15 +191,32 @@ func (uh *UserHandler) GetInfo(c *gin.Context) {
 	response.OK(c, gin.H{"name": user.UserName, "avatar": "testavatar"}, "success")
 }
 
-// GetAllUserInfo 获取所有的用户信息
+// GetAllUserInfo 获取所有的用户信息，但只包含用户名、ID和是否是管理员
 func (uh *UserHandler) GetAllUserInfo(c *gin.Context) {
-	users, err := uh.UserService.GetAllUserInfo()
+
+	// SimplifiedUser 用于只返回必要的用户信息
+	type SimplifiedUser struct {
+		ID       uint   `json:"id"`
+		UserName string `json:"username"`
+		IsAdmin  bool   `json:"is_admin"`
+	}
+	// 假设 UserService 有一个方法 GetAllSimplifiedUsersInfo，只返回用户的ID、用户名和是否是管理员
+	simplifiedUsers, err := uh.UserService.GetAllUserInfo()
 	if err != nil {
-		// 如果获取用户信息时出错，返回内部服务器错误
 		response.InternalServerError(c, "Failed to get all user info")
 		return
 	}
 
+	// 创建一个用于响应的切片，只包含需要的字段
+	var usersResponse []SimplifiedUser
+	for _, user := range simplifiedUsers {
+		usersResponse = append(usersResponse, SimplifiedUser{
+			ID:       user.ID,
+			UserName: user.UserName,
+			IsAdmin:  user.IsAdmin, // 假设这是你模型中的字段
+		})
+	}
+
 	// 如果成功获取到用户信息，返回OK状态码和用户列表
-	response.OK(c, users, "success")
+	response.OK(c, usersResponse, "success")
 }

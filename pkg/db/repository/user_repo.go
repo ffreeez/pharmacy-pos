@@ -53,22 +53,44 @@ func CreateUser(db *gorm.DB, user *UserModel.User) error {
 	return result.Error
 }
 
-// UpdateUser 更新用户信息
-func UpdateUser(db *gorm.DB, user *UserModel.User) error {
-	var hasherr error
-	user.Password, hasherr = UserModel.HashPassword(user.Password)
-	if hasherr != nil {
-		logs.Errorf("更新用户信息时, 生成hash密码失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
-		return hasherr
+// ResetPassword 重设用户密码
+func ResetPassword(db *gorm.DB, password string, id uint) error {
+	var user UserModel.User
+	if err := db.First(&user, id).Error; err != nil {
+		logs.Errorf("未找到用户: %d, error: %v", id, err)
+		return err
 	}
 
-	result := db.Model(user).Omit("CreatedAt").Save(user)
+	hashedPassword, err := UserModel.HashPassword(password)
+	if err != nil {
+		logs.Errorf("生成hash密码失败, user ID: %d, error: %v", id, err)
+		return err
+	}
+
+	result := db.Model(&user).Update("Password", hashedPassword)
 	if result.Error != nil {
-		logs.Errorf("更新用户信息失败, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
+		logs.Errorf("更新用户密码失败, user ID: %d, error: %v", id, result.Error)
 		return result.Error
 	}
-	logs.Infof("更新用户信息成功, username: %s, password: %s, isadmin: %t", user.UserName, user.Password, user.IsAdmin)
-	return result.Error
+
+	return nil
+}
+
+// UpdateIsAdmin 修改用户权限
+func UpdateIsAdmin(db *gorm.DB, isadmin bool, id uint) error {
+	var user UserModel.User
+	if err := db.First(&user, id).Error; err != nil {
+		logs.Errorf("未找到用户: %d, error: %v", id, err)
+		return err
+	}
+
+	result := db.Model(&user).Update("IsAdmin", isadmin)
+	if result.Error != nil {
+		logs.Errorf("更新用户权限失败, user ID: %d, error: %v", id, result.Error)
+		return result.Error
+	}
+
+	return nil
 }
 
 // DeleteUserByID 根据ID删除用户

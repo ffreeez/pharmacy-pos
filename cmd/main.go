@@ -25,10 +25,10 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	protected.Use(jwt.JWTAuthMiddleware())
 	protected.POST("/create", userHandler.CreateUser)
 	protected.GET("/get/:id", userHandler.GetUserByID)
-	protected.PUT("/update/:id", userHandler.UpdateUser)
+	protected.PUT("/update/password/:id", userHandler.ResetPassword)
+	protected.PUT("/update/isadmin/:id", userHandler.UpdateIsAdmin)
 	protected.DELETE("/delete/:id", userHandler.DeleteUserByID)
 	protected.GET("/getall", userHandler.GetAllUserInfo)
-
 	protected.GET("/info", userHandler.GetInfo)
 
 	return router

@@ -12,7 +12,7 @@ type User struct {
 	gorm.Model
 	UserName string
 	Password string
-	IsAdmin  bool
+	IsAdmin  bool `json:"is_admin"`
 }
 
 var c = 0

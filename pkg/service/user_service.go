@@ -27,9 +27,14 @@ func (us *UserService) CreateUser(user *UserModel.User) error {
 	return UserRepo.CreateUser(us.DB, user)
 }
 
-// UpdateUser 更新用户信息
-func (us *UserService) UpdateUser(user *UserModel.User) error {
-	return UserRepo.UpdateUser(us.DB, user)
+// ResetPassword 重置用户密码
+func (us *UserService) ResetPassword(password string, id uint) error {
+	return UserRepo.ResetPassword(us.DB, password, id)
+}
+
+// UpdateIsAdmin 修改用户权限
+func (us *UserService) UpdateIsAdmin(isadmin bool, id uint) error {
+	return UserRepo.UpdateIsAdmin(us.DB, isadmin, id)
 }
 
 // DeleteUserByID 根据ID删除用户
