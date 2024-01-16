@@ -3,7 +3,7 @@ package main
 import (
 	"pharmacy-pos/pkg/config"
 	"pharmacy-pos/pkg/db"
-	UserHandler "pharmacy-pos/pkg/handlers"
+	userhandler "pharmacy-pos/pkg/handlers/user"
 	"pharmacy-pos/pkg/middleware/cors"
 	"pharmacy-pos/pkg/middleware/jwt"
 	"pharmacy-pos/pkg/util/logger"
@@ -16,7 +16,7 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 
 	router := gin.Default()
 	router.Use(cors.Cors())
-	userHandler := UserHandler.NewUserHandler(database)
+	userHandler := userhandler.NewUserHandler(database)
 
 	router.POST("/login", userHandler.Login)
 

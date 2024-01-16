@@ -3,7 +3,7 @@ package main
 import (
 	"pharmacy-pos/pkg/config"
 	"pharmacy-pos/pkg/db"
-	UserModel "pharmacy-pos/pkg/db/models"
+	"pharmacy-pos/pkg/db/models/user"
 	"pharmacy-pos/pkg/util/logger"
 )
 
@@ -17,10 +17,10 @@ func main() {
 		panic("数据库初始化失败")
 	}
 
-	user := &UserModel.User{}
+	user := &usermodel.User{}
 	user.ID = 1
 	user.UserName = "admin"
-	user.Password, _ = UserModel.HashPassword("password")
+	user.Password, _ = usermodel.HashPassword("password")
 	database.Create(user)
 
 }

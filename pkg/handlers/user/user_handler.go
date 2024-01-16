@@ -1,11 +1,11 @@
-package usermodel
+package userhandler
 
 import (
 	"strconv"
 
-	usermodel "pharmacy-pos/pkg/db/models"
+	"pharmacy-pos/pkg/db/models/user"
 	"pharmacy-pos/pkg/middleware/jwt"
-	userservice "pharmacy-pos/pkg/service"
+	"pharmacy-pos/pkg/service/user"
 	"pharmacy-pos/pkg/util/e"
 	"pharmacy-pos/pkg/util/response"
 
