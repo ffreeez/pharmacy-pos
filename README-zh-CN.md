@@ -41,3 +41,13 @@
 - `PUT /users/update/isadmin/:id`：修改对应id的用户，重新设置权限
 
 #### 药品API
+- `DEL /drugs/delete/:id`：删除对应id的药品
+- `POST /drugs/create`：创建新药品
+- `GET /drugs/get:id`：查询对应id的药品详细信息
+- `GET /drugs/getall`: 获取所有用户信息的列表
+- `PUT /drugs/update`：修改药品
+- `DEL /categoties/delete/:id`：删除对应id的分类
+- `POST /categoties/create`：创建新药品
+- `GET /categoties/get:id`：查询对应id的药品详细信息
+- `GET /categoties/getall`: 获取所有用户信息的列表
+- `PUT /drugs/update`：修改药品

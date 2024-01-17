@@ -41,3 +41,28 @@ func (ds *DrugService) DeleteDrugByID(id uint) error {
 func (ds *DrugService) GetAllDrugs() ([]drugmodel.Drug, error) {
 	return drugrepo.GetAllDrugs(ds.DB)
 }
+
+// GetCategoryByID 根据药品ID获取分类信息
+func (ds *DrugService) GetCategoryByID(id uint) (*drugmodel.Category, error) {
+	return drugrepo.GetCategoryByID(ds.DB, id)
+}
+
+// CreateCategory 创建新的分类记录
+func (ds *DrugService) CreateCategory(category *drugmodel.Category) error {
+	return drugrepo.CreateCategory(ds.DB, category)
+}
+
+// UpdateCategory 更新分类信息
+func (ds *DrugService) UpdateCategory(drug *drugmodel.Category) error {
+	return drugrepo.UpdateCategory(ds.DB, drug)
+}
+
+// DeleteCategoryByID 根据ID删除分类记录
+func (ds *DrugService) DeleteCategoryByID(id uint) error {
+	return drugrepo.DeleteCategoryByID(ds.DB, id)
+}
+
+// GetAllCategory 获取所有分类的信息
+func (ds *DrugService) GetAllCategories() ([]drugmodel.Category, error) {
+	return drugrepo.GetAllCategorys(ds.DB)
+}

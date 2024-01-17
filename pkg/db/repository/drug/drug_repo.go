@@ -72,3 +72,64 @@ func GetAllDrugs(db *gorm.DB) ([]drugmodel.Drug, error) {
 	logs.Infof("获取所有药品信息成功")
 	return drugs, nil
 }
+
+// GetCategoryByID 根据分类ID获取分类信息
+func GetCategoryByID(db *gorm.DB, id uint) (*drugmodel.Category, error) {
+	category := &drugmodel.Category{}
+	result := db.First(category, id)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		logs.Errorf("根据药品ID获取药品信息失败, ID: %d", id)
+		return nil, e.ErrNotFound
+	}
+	if result.Error != nil {
+		logs.Errorf("查询药品时发生错误, ID: %d, error: %v", id, result.Error)
+		return nil, result.Error
+	}
+	logs.Infof("根据药品ID获取药品信息成功, ID: %d", id)
+	return category, nil
+}
+
+// CreateCategory 创建新的分类记录
+func CreateCategory(db *gorm.DB, category *drugmodel.Category) error {
+	result := db.Create(category)
+	if result.Error != nil {
+		logs.Errorf("创建新药品记录失败, Name: %s, error: %v", category.Name, result.Error)
+		return result.Error
+	}
+	logs.Infof("创建新药品记录成功, Name: %s", category.Name)
+	return nil
+}
+
+// UpdateCategory 更新分类信息
+func UpdateCategory(db *gorm.DB, category *drugmodel.Category) error {
+	result := db.Save(category)
+	if result.Error != nil {
+		logs.Errorf("更新药品信息失败, ID: %d, error: %v", category.ID, result.Error)
+		return result.Error
+	}
+	logs.Infof("更新药品信息成功, ID: %d", category.ID)
+	return nil
+}
+
+// DeleteCategoryByID 根据ID删除分类记录
+func DeleteCategoryByID(db *gorm.DB, id uint) error {
+	result := db.Delete(&drugmodel.Category{}, id)
+	if result.Error != nil {
+		logs.Errorf("根据ID删除药品记录失败, ID: %d, error: %v", id, result.Error)
+		return result.Error
+	}
+	logs.Infof("根据ID删除药品记录成功, ID: %d", id)
+	return nil
+}
+
+// GetAllCategorys 获取所有分类的信息
+func GetAllCategorys(db *gorm.DB) ([]drugmodel.Category, error) {
+	var category []drugmodel.Category
+	result := db.Find(&category)
+	if result.Error != nil {
+		logs.Errorf("获取所有药品信息失败: %v", result.Error)
+		return nil, result.Error
+	}
+	logs.Infof("获取所有药品信息成功")
+	return category, nil
+}
