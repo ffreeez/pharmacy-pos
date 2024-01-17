@@ -59,136 +59,85 @@
 
 29 directories, 27 files
 ```
-我正在进行go语言的web开发，目前使用了gorm与mysql，我现在有一个userrepo如下
+我正在进行go语言的web开发，目前使用了gorm与mysql，我现在有一个userservice如下
 ```go
-package userrepo
+package userservice
 
 import (
-	"errors"
 	usermodel "pharmacy-pos/pkg/db/models/user"
-	logger "pharmacy-pos/pkg/util/logger"
-
-	"pharmacy-pos/pkg/util/e"
+	userrepo "pharmacy-pos/pkg/db/repository/user"
 
 	"gorm.io/gorm"
 )
 
-var logs = logger.GetLogger()
+// UserService 提供用户相关的服务
+type UserService struct {
+	DB *gorm.DB
+}
+
+// NewUserService 创建一个新的 UserService 实例
+func NewUserService(db *gorm.DB) *UserService {
+	return &UserService{DB: db}
+}
 
 // GetUserByID 根据用户ID获取用户
-func GetUserByID(db *gorm.DB, id uint) (*usermodel.User, error) {
-	user := &usermodel.User{}
-	result := db.First(user, id)
-	if result.Error != nil {
-		logs.Errorf("根据用户ID获取用户失败, ID: %d", id)
-		return nil, result.Error
-	}
-	logs.Infof("根据用户ID获取用户成功, ID: %d", id)
-	return user, nil
+func (us *UserService) GetUserByID(id uint) (*usermodel.User, error) {
+	return userrepo.GetUserByID(us.DB, id)
 }
 
 // CreateUser 创建新用户
-func CreateUser(db *gorm.DB, user *usermodel.User) error {
-
-	var existingUser usermodel.User
-	result := db.Where("user_name = ?", user.UserName).First(&existingUser)
-	if result.Error == nil {
-		logs.Errorf("用户名已存在, username: %s", user.UserName)
-		result.Error = e.ErrUsernameExists
-		return result.Error
-	} else if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		logs.Errorf("发生其他错误")
-		return result.Error
-	}
-
-	var HashPassworderr error
-	user.Password, HashPassworderr = usermodel.HashPassword(user.Password)
-	if HashPassworderr != nil {
-		logs.Errorf("处理用户密码失败")
-		return HashPassworderr
-	}
-	result = db.Create(user)
-	if result.Error != nil {
-		logs.Errorf("创建新用户失败, username: %s, isadmin: %t", user.UserName, user.IsAdmin)
-		return result.Error
-	}
-	logs.Infof("创建新用户成功, username: %s, isadmin: %t", user.UserName, user.IsAdmin)
-	return result.Error
+func (us *UserService) CreateUser(user *usermodel.User) error {
+	return userrepo.CreateUser(us.DB, user)
 }
 
-// ResetPassword 重设用户密码
-func ResetPassword(db *gorm.DB, password string, id uint) error {
-	var user usermodel.User
-	if err := db.First(&user, id).Error; err != nil {
-		logs.Errorf("未找到用户: %d, error: %v", id, err)
-		return err
-	}
-
-	hashedPassword, err := usermodel.HashPassword(password)
-	if err != nil {
-		logs.Errorf("生成hash密码失败, user ID: %d, error: %v", id, err)
-		return err
-	}
-
-	result := db.Model(&user).Update("Password", hashedPassword)
-	if result.Error != nil {
-		logs.Errorf("更新用户密码失败, user ID: %d, error: %v", id, result.Error)
-		return result.Error
-	}
-
-	return nil
+// ResetPassword 重置用户密码
+func (us *UserService) ResetPassword(password string, id uint) error {
+	return userrepo.ResetPassword(us.DB, password, id)
 }
 
 // UpdateIsAdmin 修改用户权限
-func UpdateIsAdmin(db *gorm.DB, isadmin bool, id uint) error {
-	var user usermodel.User
-	if err := db.First(&user, id).Error; err != nil {
-		logs.Errorf("未找到用户: %d, error: %v", id, err)
-		return err
-	}
-
-	result := db.Model(&user).Update("IsAdmin", isadmin)
-	if result.Error != nil {
-		logs.Errorf("更新用户权限失败, user ID: %d, error: %v", id, result.Error)
-		return result.Error
-	}
-
-	return nil
+func (us *UserService) UpdateIsAdmin(isadmin bool, id uint) error {
+	return userrepo.UpdateIsAdmin(us.DB, isadmin, id)
 }
 
 // DeleteUserByID 根据ID删除用户
-func DeleteUserByID(db *gorm.DB, id uint) error {
-	result := db.Delete(&usermodel.User{}, id)
-	if result.Error != nil {
-		logs.Errorf("根据ID删除用户失败, id: %d", id)
-		return result.Error
-	}
-	logs.Infof("根据ID删除用户成功, id: %d", id)
-	return result.Error
+func (us *UserService) DeleteUserByID(id uint) error {
+	return userrepo.DeleteUserByID(us.DB, id)
 }
 
-// GetUserByUserName 根据用户名查找用户
-func GetUserByUserName(db *gorm.DB, username string) (*usermodel.User, error) {
-	user := &usermodel.User{}
-	result := db.Where("user_name = ?", username).First(user)
-	if result.Error != nil {
-		logs.Errorf("根据用户名查找用户失败, username: %s", username)
-		return nil, result.Error
+// AuthenticateUser 验证用户的用户名和密码
+func (us *UserService) AuthenticateUser(username, password string) (*usermodel.User, error) {
+	user, err := userrepo.GetUserByUserName(us.DB, username)
+	if err != nil {
+		return nil, err
 	}
-	logs.Infof("根据用户名查找用户成功, username: %s", username)
+
+	// 检查密码是否匹配
+	err = usermodel.CheckPassword(user.Password, password)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// GetUserByUserName 根据用户名获取user
+func (us *UserService) GetUserByUserName(username string) (*usermodel.User, error) {
+	user, err := userrepo.GetUserByUserName(us.DB, username)
+	if err != nil {
+		return nil, err
+	}
 	return user, nil
 }
 
 // GetAllUserInfo 获取所有的用户信息
-func GetAllUserInfo(db *gorm.DB) ([]usermodel.User, error) {
-	var users []usermodel.User
-	result := db.Find(&users)
-	if result.Error != nil {
-		logs.Errorf("获取所有用户信息失败: %v", result.Error)
-		return nil, result.Error
+func (us *UserService) GetAllUserInfo() ([]usermodel.User, error) {
+	users, err := userrepo.GetAllUserInfo(us.DB)
+	if err != nil {
+		return nil, err
 	}
-	logs.Infof("获取所有用户信息成功")
 	return users, nil
 }
+
 ```
-我现在将要问你一些问题，请你参考userrepo和项目结构然后给我一些合理的建议
+我现在将要问你一些问题，请你参考userservice和项目结构然后给我一些合理的建议
