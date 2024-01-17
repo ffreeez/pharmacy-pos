@@ -189,7 +189,7 @@ func (uh *UserHandler) GetInfo(c *gin.Context) {
 	}
 
 	// 返回用户信息
-	response.OK(c, gin.H{"name": user.UserName, "avatar": "testavatar"}, "success")
+	response.OK(c, gin.H{"name": user.UserName, "avatar": user.Avatar}, "success")
 }
 
 // GetAllUserInfo 获取所有的用户信息，但只包含用户名、ID和是否是管理员

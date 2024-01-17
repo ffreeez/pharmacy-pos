@@ -13,6 +13,7 @@ type User struct {
 	UserName string
 	Password string
 	IsAdmin  bool `json:"is_admin"`
+	Avatar string
 }
 
 var c = 0
