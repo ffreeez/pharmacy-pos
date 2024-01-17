@@ -62,13 +62,19 @@ func (dh *DrugHandler) CreateDrug(c *gin.Context) {
 
 // UpdateDrug 更新药品信息
 func (dh *DrugHandler) UpdateDrug(c *gin.Context) {
+
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "Invalid drug ID")
+		return
+	}
 	var drug drugmodel.Drug
 	if err := c.ShouldBindJSON(&drug); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
 	}
 
-	err := dh.DrugService.UpdateDrug(&drug)
+	err = dh.DrugService.UpdateDrug(&drug, uint(id))
 	if err != nil {
 		response.InternalServerError(c, "Failed to update drug")
 		return
@@ -167,13 +173,19 @@ func (dh *DrugHandler) CreateCategory(c *gin.Context) {
 
 // UpdateCategory 更新分类信息
 func (dh *DrugHandler) UpdateCategory(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "Invalid category ID")
+		return
+	}
+
 	var category drugmodel.Category
 	if err := c.ShouldBindJSON(&category); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
 	}
 
-	err := dh.DrugService.UpdateCategory(&category)
+	err = dh.DrugService.UpdateCategory(&category, uint(id))
 	if err != nil {
 		response.InternalServerError(c, "Failed to update category")
 		return

@@ -28,8 +28,8 @@ func (ds *DrugService) CreateDrug(drug *drugmodel.Drug) error {
 }
 
 // UpdateDrug 更新药品信息
-func (ds *DrugService) UpdateDrug(drug *drugmodel.Drug) error {
-	return drugrepo.UpdateDrug(ds.DB, drug)
+func (ds *DrugService) UpdateDrug(drug *drugmodel.Drug, id uint) error {
+	return drugrepo.UpdateDrug(ds.DB, drug, id)
 }
 
 // DeleteDrugByID 根据ID删除药品记录
@@ -53,8 +53,8 @@ func (ds *DrugService) CreateCategory(category *drugmodel.Category) error {
 }
 
 // UpdateCategory 更新分类信息
-func (ds *DrugService) UpdateCategory(drug *drugmodel.Category) error {
-	return drugrepo.UpdateCategory(ds.DB, drug)
+func (ds *DrugService) UpdateCategory(drug *drugmodel.Category, id uint) error {
+	return drugrepo.UpdateCategory(ds.DB, drug, id)
 }
 
 // DeleteCategoryByID 根据ID删除分类记录
