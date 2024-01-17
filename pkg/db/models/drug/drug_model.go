@@ -20,4 +20,5 @@ type Drug struct {
 	Category    Category
 	Price       float64
 	Inventory   uint
+	ImageURL    string
 }
