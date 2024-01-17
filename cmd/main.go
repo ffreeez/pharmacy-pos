@@ -32,6 +32,7 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	user_protected_api.PUT("/update/isadmin/:id", userHandler.UpdateIsAdmin)
 	user_protected_api.DELETE("/delete/:id", userHandler.DeleteUserByID)
 	user_protected_api.GET("/getall", userHandler.GetAllUserInfo)
+	user_protected_api.GET("/getbyusername/:username", userHandler.GetUserByUserName)
 	user_protected_api.GET("/info", userHandler.GetInfo)
 
 	drug_protected_api := router.Group("/drugs")
@@ -68,10 +69,22 @@ func main() {
 }
 
 // TODO
-// 重构Users相关内容，将handler中的不合理结构转移到service
-// 完成所有数据模型的repo
-// 整理数据模型文档，确定数据模型
-// 整理api文档，确定最基础的api
-// 完成所有数据模型的service
-// 完成所有数据模型的handler
-// 使用postman进行所有的api测试
+
+// 后端
+
+// 添加分页
+// 修改userupdate功能，user不存在返回失败
+// 修改drugupdate功能，drug不存在返回失败
+// 添加对中文的支持
+// 添加校验方法中间件，验证用户输入
+// 重构user相关代码，功能整合到service
+// 添加用户头像链接
+// 添加药品图片链接
+
+// 前端
+// 隐藏id
+// 添加分页
+// 删除框删除时需要确定
+// 增加drug的筛选排序
+// 增加drug的查询功能
+// 添加药品图片

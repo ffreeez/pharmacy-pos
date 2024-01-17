@@ -64,7 +64,9 @@ func DeleteDrugByID(db *gorm.DB, id uint) error {
 // GetAllDrugs 获取所有药品的信息
 func GetAllDrugs(db *gorm.DB) ([]drugmodel.Drug, error) {
 	var drugs []drugmodel.Drug
-	result := db.Find(&drugs)
+
+	result := db.Preload("Category").Find(&drugs)
+
 	if result.Error != nil {
 		logs.Errorf("获取所有药品信息失败: %v", result.Error)
 		return nil, result.Error

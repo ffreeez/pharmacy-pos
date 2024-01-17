@@ -35,19 +35,23 @@
 - `GET /users/getinfo`：根据用户传入的token，获取用户的头像和用户名
 - `POST /users/create`：创建新用户，并加密密码后存储
 - `DEL /users/delete/:id`：删除对应id的用户
-- `GET /users/get:id`：查询对应id的详细信息
+- `GET /users/get/:id`：查询对应id的详细信息
 - `GET /users/getall`：获取所有用户信息的列表
+- `GET /users/getbyusername`：根据用户名获取用户详细信息
 - `PUT /users/update/password/:id`：修改对应id的用户，并将密码加密存储
 - `PUT /users/update/isadmin/:id`：修改对应id的用户，重新设置权限
 
 #### 药品API
+
 - `DEL /drugs/delete/:id`：删除对应id的药品
 - `POST /drugs/create`：创建新药品
-- `GET /drugs/get:id`：查询对应id的药品详细信息
-- `GET /drugs/getall`: 获取所有用户信息的列表
+- `GET /drugs/get/:id`：查询对应id的药品详细信息
+- `GET /drugs/getall`: 获取所有药品信息的列表
 - `PUT /drugs/update`：修改药品
+
 - `DEL /categoties/delete/:id`：删除对应id的分类
-- `POST /categoties/create`：创建新药品
-- `GET /categoties/get:id`：查询对应id的药品详细信息
-- `GET /categoties/getall`: 获取所有用户信息的列表
-- `PUT /drugs/update`：修改药品
+- `POST /categoties/create`：创建新分类
+- `GET /categoties/get/:id`：查询对应id的分类详细信息
+- `GET /categoties/getall`: 获取所有分类信息的列表
+- `PUT /categoties/update`：修改分类
+

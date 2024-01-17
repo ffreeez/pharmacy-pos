@@ -1,6 +1,7 @@
 package drughandler
 
 import (
+	"fmt"
 	"strconv"
 
 	drugmodel "pharmacy-pos/pkg/db/models/drug"
@@ -49,6 +50,7 @@ func (dh *DrugHandler) CreateDrug(c *gin.Context) {
 		return
 	}
 
+	fmt.Println(drug)
 	err := dh.DrugService.CreateDrug(&drug)
 	if err != nil {
 		response.InternalServerError(c, "Failed to create drug")
@@ -95,13 +97,37 @@ func (dh *DrugHandler) DeleteDrugByID(c *gin.Context) {
 
 // GetAllDrugs 获取所有药品信息
 func (dh *DrugHandler) GetAllDrugs(c *gin.Context) {
-	drugs, err := dh.DrugService.GetAllDrugs()
+
+	// SimplifiedUser 用于只返回必要的用户信息
+	type SimplifiedDrug struct {
+		ID           uint    `json:"id"`
+		Name         string  `json:"name"`
+		Description  string  `json:"description"`
+		CategoryID   uint    `json:"categoryid"`
+		CategoryName string  `json:"categoryname"`
+		Price        float64 `json:"price"`
+		Inventory    float64 `json:"inventory"`
+	}
+
+	simplifiedDrugs, err := dh.DrugService.GetAllDrugs()
 	if err != nil {
 		response.InternalServerError(c, "Failed to get all drugs")
 		return
 	}
 
-	response.OK(c, drugs, "success")
+	var drugResponse []SimplifiedDrug
+	for _, drug := range simplifiedDrugs {
+		drugResponse = append(drugResponse, SimplifiedDrug{
+			ID:           drug.ID,
+			Name:         drug.Name,
+			Description:  drug.Description,
+			CategoryID:   drug.CategoryID,
+			CategoryName: drug.Category.Name,
+			Price:        drug.Price,
+			Inventory:    float64(drug.Inventory),
+		})
+	}
+	response.OK(c, drugResponse, "success")
 }
 
 // GetCategoryByID 根据分类ID获取分类信息

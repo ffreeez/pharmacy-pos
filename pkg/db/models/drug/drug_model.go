@@ -16,7 +16,7 @@ type Drug struct {
 	gorm.Model
 	Name        string `gorm:"type:varchar(100);not null"`
 	Description string `gorm:"type:text;not null"`
-	CategoryID  uint   // 外键 (属于 - Category)
+	CategoryID  uint   `json:"category_id"`
 	Category    Category
 	Price       float64
 	Inventory   uint

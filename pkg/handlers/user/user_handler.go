@@ -1,11 +1,12 @@
 package userhandler
 
 import (
+	"fmt"
 	"strconv"
 
-	"pharmacy-pos/pkg/db/models/user"
+	usermodel "pharmacy-pos/pkg/db/models/user"
 	"pharmacy-pos/pkg/middleware/jwt"
-	"pharmacy-pos/pkg/service/user"
+	userservice "pharmacy-pos/pkg/service/user"
 	"pharmacy-pos/pkg/util/e"
 	"pharmacy-pos/pkg/util/response"
 
@@ -219,4 +220,43 @@ func (uh *UserHandler) GetAllUserInfo(c *gin.Context) {
 
 	// 如果成功获取到用户信息，返回OK状态码和用户列表
 	response.OK(c, usersResponse, "success")
+}
+
+// GetUserByUserName 根据用户名获取用户信息
+func (uh *UserHandler) GetUserByUserName(c *gin.Context) {
+	// 从请求参数中获取用户名
+	username := c.Param("username")
+	if username == "" {
+		response.BadRequest(c, "Username is required")
+		return
+	}
+
+	fmt.Println(username)
+	// 使用用户名获取用户信息
+	user, err := uh.UserService.GetUserByUserName(username)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			response.NotFound(c, "User not found")
+		} else {
+			response.InternalServerError(c, "Failed to get user information")
+		}
+		return
+	}
+
+	// SimplifiedUser 用于只返回必要的用户信息
+	type SimplifiedUser struct {
+		ID       uint   `json:"id"`
+		UserName string `json:"username"`
+		IsAdmin  bool   `json:"is_admin"`
+	}
+
+	// 创建一个用于响应的对象，只包含需要的字段
+	userResponse := SimplifiedUser{
+		ID:       user.ID,
+		UserName: user.UserName,
+		IsAdmin:  user.IsAdmin, // 假设这是你模型中的字段
+	}
+
+	// 如果成功获取到用户信息，返回OK状态码和用户信息
+	response.OK(c, userResponse, "success")
 }
