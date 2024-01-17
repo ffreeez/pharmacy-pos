@@ -21,6 +21,7 @@ func main() {
 	user.ID = 1
 	user.UserName = "admin"
 	user.Password, _ = usermodel.HashPassword("password")
+	user.IsAdmin = true
 	database.Create(user)
 
 }
