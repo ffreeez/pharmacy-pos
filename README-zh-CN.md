@@ -40,3 +40,4 @@
 - `PUT /users/update/password/:id`：修改对应id的用户，并将密码加密存储
 - `PUT /users/update/isadmin/:id`：修改对应id的用户，重新设置权限
 
+#### 药品API

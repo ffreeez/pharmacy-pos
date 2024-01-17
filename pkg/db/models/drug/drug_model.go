@@ -25,9 +25,8 @@ type Drug struct {
 // Price 表示药品价格
 type Price struct {
 	gorm.Model
-	DrugID   uint    `gorm:"uniqueIndex"`              // 药品ID
-	Value    float64 `gorm:"not null"`                 // 价格值
-	Currency string  `gorm:"type:varchar(3);not null"` // 货币类型
+	DrugID uint    `gorm:"uniqueIndex"` // 药品ID
+	Value  float64 `gorm:"not null"`    // 价格值
 }
 
 // Inventory 表示药品库存
