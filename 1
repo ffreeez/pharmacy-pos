@@ -1,3 +1,66 @@
+```
+.
+├── cmd
+│   └── main.go
+├── configs
+│   ├── config.yaml
+│   └── config.yaml.example
+├── go.mod
+├── go.sum
+├── LICENSE
+├── logs
+│   └── app.log
+├── pkg
+│   ├── config
+│   │   └── config.go
+│   ├── db
+│   │   ├── dbinit.go
+│   │   ├── models
+│   │   │   ├── drug
+│   │   │   │   └── drug_model.go
+│   │   │   ├── member
+│   │   │   │   └── member_model.go
+│   │   │   ├── order
+│   │   │   │   └── order_model.go
+│   │   │   ├── syslog
+│   │   │   │   └── syslog_model.go
+│   │   │   └── user
+│   │   │       └── user_model.go
+│   │   └── repository
+│   │       ├── drug
+│   │       │   └── drug_repo.go
+│   │       └── user
+│   │           └── user_repo.go
+│   ├── handlers
+│   │   └── user
+│   │       └── user_handler.go
+│   ├── middleware
+│   │   ├── cors
+│   │   │   └── cors.go
+│   │   └── jwt
+│   │       └── jwt.go
+│   ├── service
+│   │   ├── drug
+│   │   │   └── drug_service.go
+│   │   └── user
+│   │       └── user_service.go
+│   └── util
+│       ├── e
+│       │   └── error.go
+│       ├── logger
+│       │   └── logger.go
+│       └── response
+│           └── response.go
+├── README.md
+├── README-zh-CN.md
+└── scripts
+    └── init_admin
+        └── init_admin.go
+
+29 directories, 27 files
+```
+我正在进行go语言的web开发，目前使用了gorm与mysql，我现在有一个userrepo如下
+```go
 package userrepo
 
 import (
@@ -127,3 +190,5 @@ func GetAllUserInfo(db *gorm.DB) ([]usermodel.User, error) {
 	logs.Infof("获取所有用户信息成功")
 	return users, nil
 }
+```
+我现在将要问你一些问题，请你参考userrepo和项目结构然后给我一些合理的建议

@@ -29,7 +29,7 @@ var AppConfig Config
 
 // 加载配置文件
 func Load() {
-	file, err := os.Open("/config/workspace/sources/golang/Pharmacy-POS/configs/config.yaml")
+	file, err := os.Open("./configs/config.yaml")
 	if err != nil {
 		panic("打开配置文件失败")
 	}

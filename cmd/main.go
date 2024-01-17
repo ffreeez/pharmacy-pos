@@ -55,3 +55,4 @@ func main() {
 // 整理api文档，确定最基础的api
 // 完成所有数据模型的service
 // 完成所有数据模型的handler
+// 使用postman进行所有的api测试
