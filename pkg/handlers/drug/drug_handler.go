@@ -144,22 +144,31 @@ func (dh *DrugHandler) GetCategoryByID(c *gin.Context) {
 		return
 	}
 
-	drugID := uint(id)
-	drug, err := dh.DrugService.GetCategoryByID(drugID)
+	categoryID := uint(id)
+	category, err := dh.DrugService.GetCategoryByID(categoryID)
 	if err != nil {
 		response.InternalServerError(c, "Failed to get category")
 		return
 	}
 
-	response.OK(c, drug, "success")
+	response.OK(c, category, "success")
 }
 
 // CreateCategory 创建新分类
 func (dh *DrugHandler) CreateCategory(c *gin.Context) {
-	var category drugmodel.Category
-	if err := c.ShouldBindJSON(&category); err != nil {
+
+	type CategoryInput struct {
+		Name string `json:"name"`
+	}
+
+	var input CategoryInput
+	if err := c.ShouldBindJSON(&input); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
+	}
+
+	category := drugmodel.Category{
+		Name: input.Name,
 	}
 
 	err := dh.DrugService.CreateCategory(&category)
@@ -173,19 +182,32 @@ func (dh *DrugHandler) CreateCategory(c *gin.Context) {
 
 // UpdateCategory 更新分类信息
 func (dh *DrugHandler) UpdateCategory(c *gin.Context) {
+
+	type CategoryInput struct {
+		Name string `json:"name"`
+	}
+
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		response.BadRequest(c, "Invalid category ID")
 		return
 	}
 
-	var category drugmodel.Category
-	if err := c.ShouldBindJSON(&category); err != nil {
+	var input CategoryInput
+	if err := c.ShouldBindJSON(&input); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
 	}
 
-	err = dh.DrugService.UpdateCategory(&category, uint(id))
+	categoryID := uint(id)
+	category, err := dh.DrugService.GetCategoryByID(categoryID)
+	if err != nil {
+		response.InternalServerError(c, "Failed to get category")
+		return
+	}
+
+	category.Name = input.Name
+	err = dh.DrugService.UpdateCategory(category, uint(id))
 	if err != nil {
 		response.InternalServerError(c, "Failed to update category")
 		return
@@ -213,12 +235,53 @@ func (dh *DrugHandler) DeleteCategoryByID(c *gin.Context) {
 }
 
 // GetAllCategory 获取所有分类信息
-func (dh *DrugHandler) GetAllCategorys(c *gin.Context) {
-	drugs, err := dh.DrugService.GetAllCategories()
+func (dh *DrugHandler) GetAllCategories(c *gin.Context) {
+	type SimplifiedCategory struct {
+		ID   uint   `json:"id"`
+		Name string `json:"name"`
+	}
+
+	simplifiedCategories, err := dh.DrugService.GetAllCategories()
 	if err != nil {
-		response.InternalServerError(c, "Failed to get all categorys")
+		response.InternalServerError(c, "Failed to get all categories")
 		return
 	}
 
-	response.OK(c, drugs, "success")
+	var categoryResponse []SimplifiedCategory
+	for _, drug := range simplifiedCategories {
+		categoryResponse = append(categoryResponse, SimplifiedCategory{
+			ID:   drug.ID,
+			Name: drug.Name,
+		})
+	}
+	response.OK(c, categoryResponse, "success")
+}
+
+// GetCategoryByName 根据分类名获取分类
+func (dh *DrugHandler) GetCategoryByName(c *gin.Context) {
+	name := c.Param("name")
+	if name == "" {
+		response.BadRequest(c, "Name is required")
+		return
+	}
+
+	category, err := dh.DrugService.GetCategoryByName(name)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			response.NotFound(c, "Category not found")
+		} else {
+			response.InternalServerError(c, "Failed to get category")
+		}
+		return
+	}
+
+	data := struct {
+		ID   uint   `json:"id"`
+		Name string `json:"name"`
+	}{
+		ID:   category.ID,
+		Name: category.Name,
+	}
+
+	response.OK(c, data, "success")
 }

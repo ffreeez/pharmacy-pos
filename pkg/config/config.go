@@ -45,7 +45,7 @@ func Load() {
 
 // 从配置文件获取数据库连接
 func GetDb() (dsn string) {
-	dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=true",
+	dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		AppConfig.MySQL.User,
 		AppConfig.MySQL.Passwd,
 		AppConfig.MySQL.Host,

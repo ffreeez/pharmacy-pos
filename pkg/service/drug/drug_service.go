@@ -66,3 +66,8 @@ func (ds *DrugService) DeleteCategoryByID(id uint) error {
 func (ds *DrugService) GetAllCategories() ([]drugmodel.Category, error) {
 	return drugrepo.GetAllCategorys(ds.DB)
 }
+
+// GetCategoryByName 根据名称获取分类信息
+func (ds *DrugService) GetCategoryByName(name string) (*drugmodel.Category, error) {
+	return drugrepo.GetCategoryByName(ds.DB, name)
+}

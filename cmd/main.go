@@ -27,7 +27,6 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	user_protected_api := router.Group("/users")
 	user_protected_api.Use(jwt.JWTAuthMiddleware())
 	user_protected_api.POST("/create", userHandler.CreateUser)
-	user_protected_api.GET("/get/:id", userHandler.GetUserByID)
 	user_protected_api.PUT("/update/password/:id", userHandler.ResetPassword)
 	user_protected_api.PUT("/update/isadmin/:id", userHandler.UpdateIsAdmin)
 	user_protected_api.DELETE("/delete/:id", userHandler.DeleteUserByID)
@@ -49,7 +48,8 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	category_protected_api.GET("/get/:id", drugHandler.GetCategoryByID)
 	category_protected_api.PUT("/update/:id", drugHandler.UpdateCategory)
 	category_protected_api.DELETE("/delete/:id", drugHandler.DeleteCategoryByID)
-	category_protected_api.GET("/getall", drugHandler.GetAllCategorys)
+	category_protected_api.GET("/getall", drugHandler.GetAllCategories)
+	category_protected_api.GET("/getbycategoryname/:name", drugHandler.GetCategoryByName)
 
 	return router
 }
@@ -67,19 +67,3 @@ func main() {
 
 	router.Run(":8080")
 }
-
-// TODO
-
-// 后端
-
-// 添加分页
-// 添加对中文的支持
-// 添加药品图片链接
-
-// 前端
-// 隐藏id
-// 添加分页
-// 删除框删除时需要确定
-// 增加drug的筛选排序
-// 增加drug的查询功能
-// 添加药品图片

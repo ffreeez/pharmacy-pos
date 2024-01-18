@@ -139,11 +139,27 @@ func DeleteCategoryByID(db *gorm.DB, id uint) error {
 // GetAllCategorys 获取所有分类的信息
 func GetAllCategorys(db *gorm.DB) ([]drugmodel.Category, error) {
 	var category []drugmodel.Category
-	result := db.Find(&category)
+	result := db.Preload("Drugs").Find(&category)
 	if result.Error != nil {
 		logs.Errorf("获取所有分类信息失败: %v", result.Error)
 		return nil, result.Error
 	}
 	logs.Infof("获取所有分类信息成功")
+	return category, nil
+}
+
+// GetCategoryByName 根据分类名获取分类信息
+func GetCategoryByName(db *gorm.DB, name string) (*drugmodel.Category, error) {
+	category := &drugmodel.Category{}
+	result := db.Where("name = ?", name).First(category)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		logs.Errorf("根据分类名获取分类信息失败, Name: %s", name)
+		return nil, e.ErrNotFound
+	}
+	if result.Error != nil {
+		logs.Errorf("查询分类时发生错误, Name: %s, error: %v", name, result.Error)
+		return nil, result.Error
+	}
+	logs.Infof("根据分类名获取分类信息成功, Name: %s", name)
 	return category, nil
 }

@@ -26,24 +26,6 @@ func NewUserHandler(db *gorm.DB) *UserHandler {
 	}
 }
 
-// GetUserByID 根据用户ID获取用户
-func (uh *UserHandler) GetUserByID(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if err != nil {
-		response.BadRequest(c, "Invalid user ID")
-		return
-	}
-
-	userID := uint(id)
-	user, err := uh.UserService.GetUserByID(userID)
-	if err != nil {
-		response.InternalServerError(c, "Failed to get user")
-		return
-	}
-
-	response.OK(c, user, "success")
-}
-
 // CreateUser 创建新用户
 func (uh *UserHandler) CreateUser(c *gin.Context) {
 	var user usermodel.User
