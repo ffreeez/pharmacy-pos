@@ -77,6 +77,18 @@ func CreateOrderItem(db *gorm.DB, orderItem *ordermodels.OrderItem) error {
 	return nil
 }
 
+// GetOrderItemByID 根据订单项ID获取订单项
+func GetOrderItemByID(db *gorm.DB, id uint) (*ordermodels.OrderItem, error) {
+	var orderItem ordermodels.OrderItem
+	result := db.First(&orderItem, id)
+	if result.Error != nil {
+		logs.Errorf("根据ID获取订单项失败, OrderItemID: %d, error: %v", id, result.Error)
+		return nil, result.Error
+	}
+	logs.Infof("根据ID获取订单项成功, OrderItemID: %d", id)
+	return &orderItem, nil
+}
+
 // UpdateOrderItem 更新订单项
 func UpdateOrderItem(db *gorm.DB, orderItem *ordermodels.OrderItem) error {
 	result := db.Save(orderItem)
@@ -99,14 +111,14 @@ func DeleteOrderItemByID(db *gorm.DB, id uint) error {
 	return nil
 }
 
-// GetOrderItemsByOrderID 根据订单ID获取所有订单项
-func GetOrderItemsByOrderID(db *gorm.DB, orderID uint) ([]ordermodels.OrderItem, error) {
+// GetAllOrderItems 获取所有订单项
+func GetAllOrderItems(db *gorm.DB) ([]ordermodels.OrderItem, error) {
 	var orderItems []ordermodels.OrderItem
-	result := db.Where("order_id = ?", orderID).Find(&orderItems)
+	result := db.Find(&orderItems)
 	if result.Error != nil {
-		logs.Errorf("根据订单ID获取订单项失败, OrderID: %d, error: %v", orderID, result.Error)
+		logs.Errorf("获取所有订单项失败, error: %v", result.Error)
 		return nil, result.Error
 	}
-	logs.Infof("根据订单ID获取订单项成功, OrderID: %d", orderID)
+	logs.Infof("获取所有订单项成功")
 	return orderItems, nil
 }

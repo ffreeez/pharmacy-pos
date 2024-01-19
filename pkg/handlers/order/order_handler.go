@@ -121,6 +121,23 @@ func (oh *OrderHandler) CreateOrderItem(c *gin.Context) {
 	response.Created(c, orderItem, "success")
 }
 
+// GetOrderItemByID 根据订单项ID获取订单项
+func (oh *OrderHandler) GetOrderItemByID(c *gin.Context) {
+	orderItemID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		response.BadRequest(c, "Invalid order item ID")
+		return
+	}
+
+	orderItem, err := oh.OrderService.GetOrderItemByID(uint(orderItemID))
+	if err != nil {
+		response.InternalServerError(c, "Failed to get order item")
+		return
+	}
+
+	response.OK(c, orderItem, "success")
+}
+
 // UpdateOrderItem 更新订单项
 func (oh *OrderHandler) UpdateOrderItem(c *gin.Context) {
 	var orderItem ordermodels.OrderItem
@@ -156,15 +173,9 @@ func (oh *OrderHandler) DeleteOrderItemByID(c *gin.Context) {
 	response.OK(c, gin.H{"message": "Order item deleted successfully"}, "success")
 }
 
-// GetOrderItemsByOrderID 根据订单ID获取所有订单项
-func (oh *OrderHandler) GetOrderItemsByOrderID(c *gin.Context) {
-	orderID, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if err != nil {
-		response.BadRequest(c, "Invalid order ID")
-		return
-	}
-
-	orderItems, err := oh.OrderService.GetOrderItemsByOrderID(uint(orderID))
+// GetAllOrderItems 获取所有订单项
+func (oh *OrderHandler) GetAllOrderItems(c *gin.Context) {
+	orderItems, err := oh.OrderService.GetAllOrderItems()
 	if err != nil {
 		response.InternalServerError(c, "Failed to get order items")
 		return

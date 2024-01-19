@@ -47,6 +47,11 @@ func (os *OrderService) CreateOrderItem(orderItem *ordermodels.OrderItem) error 
 	return orderrepo.CreateOrderItem(os.DB, orderItem)
 }
 
+// GetOrderItemByID 根据订单项ID获取订单项
+func (os *OrderService) GetOrderItemByID(id uint) (*ordermodels.OrderItem, error) {
+	return orderrepo.GetOrderItemByID(os.DB, id)
+}
+
 // UpdateOrderItem 更新订单项
 func (os *OrderService) UpdateOrderItem(orderItem *ordermodels.OrderItem) error {
 	return orderrepo.UpdateOrderItem(os.DB, orderItem)
@@ -57,7 +62,7 @@ func (os *OrderService) DeleteOrderItemByID(id uint) error {
 	return orderrepo.DeleteOrderItemByID(os.DB, id)
 }
 
-// GetOrderItemsByOrderID 根据订单ID获取所有订单项
-func (os *OrderService) GetOrderItemsByOrderID(orderID uint) ([]ordermodels.OrderItem, error) {
-	return orderrepo.GetOrderItemsByOrderID(os.DB, orderID)
+// GetAllOrderItems 获取所有订单项
+func (os *OrderService) GetAllOrderItems() ([]ordermodels.OrderItem, error) {
+	return orderrepo.GetAllOrderItems(os.DB)
 }
