@@ -42,14 +42,19 @@ func (ms *MemberService) GetAllMembers() ([]membermodel.Member, error) {
 	return memberrepo.GetAllMembers(ms.DB)
 }
 
-// AddCouponToMember 为会员添加优惠券
-func (ms *MemberService) AddCouponToMember(coupon *membermodel.Coupon) error {
-	return memberrepo.AddCouponToMember(ms.DB, coupon)
+// CreateCoupon 为会员创建优惠券
+func (ms *MemberService) CreateCoupon(coupon *membermodel.Coupon) error {
+	return memberrepo.CreateCoupon(ms.DB, coupon)
 }
 
-// UseCoupon 使用优惠券
-func (ms *MemberService) UseCoupon(couponID uint) error {
-	return memberrepo.UseCoupon(ms.DB, couponID)
+// GetCouponByID 根据优惠券ID获取优惠券
+func (ms *MemberService) GetCouponByID(couponID uint) (*membermodel.Coupon, error) {
+	return memberrepo.GetCouponByID(ms.DB, couponID)
+}
+
+// UpdateCoupon 更新优惠券信息
+func (ms *MemberService) UpdateCoupon(coupon *membermodel.Coupon) error {
+	return memberrepo.UpdateCoupon(ms.DB, coupon)
 }
 
 // DeleteCoupon 删除优惠券
@@ -57,7 +62,7 @@ func (ms *MemberService) DeleteCoupon(couponID uint) error {
 	return memberrepo.DeleteCoupon(ms.DB, couponID)
 }
 
-// GetCouponsByMemberID 获取会员的所有优惠券
-func (ms *MemberService) GetCouponsByMemberID(memberID uint) ([]membermodel.Coupon, error) {
-	return memberrepo.GetCouponsByMemberID(ms.DB, memberID)
+// GetAllCoupons 获取所有优惠券
+func (ms *MemberService) GetAllCoupons() ([]membermodel.Coupon, error) {
+	return memberrepo.GetAllCoupons(ms.DB)
 }

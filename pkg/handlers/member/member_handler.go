@@ -104,38 +104,55 @@ func (mh *MemberHandler) GetAllMembers(c *gin.Context) {
 	response.OK(c, members, "success")
 }
 
-// AddCouponToMember 为会员添加优惠券
-func (mh *MemberHandler) AddCouponToMember(c *gin.Context) {
+// CreateCoupon 创建优惠券
+func (mh *MemberHandler) CreateCoupon(c *gin.Context) {
 	var coupon membermodel.Coupon
 	if err := c.ShouldBindJSON(&coupon); err != nil {
 		response.BadRequest(c, "Invalid input")
 		return
 	}
 
-	err := mh.MemberService.AddCouponToMember(&coupon)
+	err := mh.MemberService.CreateCoupon(&coupon)
 	if err != nil {
-		response.InternalServerError(c, "Failed to add coupon to member")
+		response.InternalServerError(c, "Failed to create coupon")
 		return
 	}
 
 	response.Created(c, coupon, "success")
 }
 
-// UseCoupon 使用优惠券
-func (mh *MemberHandler) UseCoupon(c *gin.Context) {
+// GetCouponByID 根据优惠券ID获取优惠券
+func (mh *MemberHandler) GetCouponByID(c *gin.Context) {
 	couponID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		response.BadRequest(c, "Invalid coupon ID")
 		return
 	}
 
-	err = mh.MemberService.UseCoupon(uint(couponID))
+	coupon, err := mh.MemberService.GetCouponByID(uint(couponID))
 	if err != nil {
-		response.InternalServerError(c, "Failed to use coupon")
+		response.InternalServerError(c, "Failed to get coupon")
 		return
 	}
 
-	response.OK(c, gin.H{"message": "Coupon used successfully"}, "success")
+	response.OK(c, coupon, "success")
+}
+
+// UpdateCoupon 更新优惠券信息
+func (mh *MemberHandler) UpdateCoupon(c *gin.Context) {
+	var coupon membermodel.Coupon
+	if err := c.ShouldBindJSON(&coupon); err != nil {
+		response.BadRequest(c, "Invalid input")
+		return
+	}
+
+	err := mh.MemberService.UpdateCoupon(&coupon)
+	if err != nil {
+		response.InternalServerError(c, "Failed to update coupon")
+		return
+	}
+
+	response.OK(c, coupon, "success")
 }
 
 // DeleteCoupon 删除优惠券
@@ -155,15 +172,9 @@ func (mh *MemberHandler) DeleteCoupon(c *gin.Context) {
 	response.OK(c, gin.H{"message": "Coupon deleted successfully"}, "success")
 }
 
-// GetCouponsByMemberID 获取会员的所有优惠券
-func (mh *MemberHandler) GetCouponsByMemberID(c *gin.Context) {
-	memberID, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if err != nil {
-		response.BadRequest(c, "Invalid member ID")
-		return
-	}
-
-	coupons, err := mh.MemberService.GetCouponsByMemberID(uint(memberID))
+// GetAllCoupons 获取所有优惠券
+func (mh *MemberHandler) GetAllCoupons(c *gin.Context) {
+	coupons, err := mh.MemberService.GetAllCoupons()
 	if err != nil {
 		response.InternalServerError(c, "Failed to get coupons")
 		return

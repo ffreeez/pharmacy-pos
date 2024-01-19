@@ -1,9 +1,8 @@
 package memberrepo
 
 import (
-	"pharmacy-pos/pkg/db/models/member"
+	membermodel "pharmacy-pos/pkg/db/models/member"
 	logger "pharmacy-pos/pkg/util/logger"
-	"time"
 
 	"gorm.io/gorm"
 )
@@ -67,29 +66,37 @@ func GetAllMembers(db *gorm.DB) ([]membermodel.Member, error) {
 	return members, nil
 }
 
-// AddCouponToMember 为会员添加优惠券
-func AddCouponToMember(db *gorm.DB, coupon *membermodel.Coupon) error {
+// CreateCoupon 创建优惠券
+func CreateCoupon(db *gorm.DB, coupon *membermodel.Coupon) error {
 	result := db.Create(coupon)
 	if result.Error != nil {
-		logs.Errorf("为会员添加优惠券失败, MemberID: %d, error: %v", coupon.MemberID, result.Error)
+		logs.Errorf("添加优惠券失败, error: %v", result.Error)
 		return result.Error
 	}
-	logs.Infof("为会员添加优惠券成功, MemberID: %d", coupon.MemberID)
+	logs.Info("添加优惠券成功")
 	return nil
 }
 
-// UseCoupon 使用优惠券
-func UseCoupon(db *gorm.DB, couponID uint) error {
-	result := db.Model(&membermodel.Coupon{}).Where("id = ? AND used = ?", couponID, false).Updates(map[string]interface{}{"Used": true, "ValidUntil": time.Now()})
+// GetCouponByID 根据id查找优惠券
+func GetCouponByID(db *gorm.DB, couponID uint) (*membermodel.Coupon, error) {
+	var coupon membermodel.Coupon
+	result := db.First(&coupon, couponID)
 	if result.Error != nil {
-		logs.Errorf("使用优惠券失败, CouponID: %d, error: %v", couponID, result.Error)
+		logs.Errorf("查找优惠券失败, CouponID: %d, error: %v", couponID, result.Error)
+		return nil, result.Error
+	}
+	logs.Infof("查找优惠券成功, CouponID: %d", couponID)
+	return &coupon, nil
+}
+
+// UpdateCoupon 更新优惠券信息
+func UpdateCoupon(db *gorm.DB, coupon *membermodel.Coupon) error {
+	result := db.Save(coupon)
+	if result.Error != nil {
+		logs.Errorf("更新优惠券失败, CouponID: %d, error: %v", coupon.ID, result.Error)
 		return result.Error
 	}
-	if result.RowsAffected == 0 {
-		logs.Errorf("优惠券不存在或已被使用, CouponID: %d", couponID)
-		return gorm.ErrRecordNotFound
-	}
-	logs.Infof("使用优惠券成功, CouponID: %d", couponID)
+	logs.Infof("更新优惠券成功, CouponID: %d", coupon.ID)
 	return nil
 }
 
@@ -104,14 +111,14 @@ func DeleteCoupon(db *gorm.DB, couponID uint) error {
 	return nil
 }
 
-// GetCouponsByMemberID 获取会员的所有优惠券
-func GetCouponsByMemberID(db *gorm.DB, memberID uint) ([]membermodel.Coupon, error) {
+// GetAllCoupons 获取所有优惠券
+func GetAllCoupons(db *gorm.DB) ([]membermodel.Coupon, error) {
 	var coupons []membermodel.Coupon
-	result := db.Where("member_id = ?", memberID).Find(&coupons)
+	result := db.Find(&coupons)
 	if result.Error != nil {
-		logs.Errorf("获取会员的所有优惠券失败, MemberID: %d, error: %v", memberID, result.Error)
+		logs.Errorf("获取所有优惠券失败, error: %v", result.Error)
 		return nil, result.Error
 	}
-	logs.Infof("获取会员的所有优惠券成功, MemberID: %d", memberID)
+	logs.Info("获取所有优惠券成功")
 	return coupons, nil
 }
