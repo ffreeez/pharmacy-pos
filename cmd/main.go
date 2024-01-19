@@ -4,6 +4,9 @@ import (
 	"pharmacy-pos/pkg/config"
 	"pharmacy-pos/pkg/db"
 	drughandler "pharmacy-pos/pkg/handlers/drug"
+	memberhandler "pharmacy-pos/pkg/handlers/member"
+	orderhandler "pharmacy-pos/pkg/handlers/order"
+	sysloghandler "pharmacy-pos/pkg/handlers/syslog"
 	userhandler "pharmacy-pos/pkg/handlers/user"
 	"pharmacy-pos/pkg/middleware/cors"
 	"pharmacy-pos/pkg/middleware/jwt"
@@ -21,6 +24,9 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 
 	userHandler := userhandler.NewUserHandler(database)
 	drugHandler := drughandler.NewDrugHandler(database)
+	memberHandler := memberhandler.NewMemberHandler(database)
+	orderHandler := orderhandler.NewOrderHandler(database)
+	syslogHandler := sysloghandler.NewSyslogHandler(database)
 
 	router.POST("/login", userHandler.Login)
 
@@ -50,6 +56,44 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	category_protected_api.DELETE("/delete/:id", drugHandler.DeleteCategoryByID)
 	category_protected_api.GET("/getall", drugHandler.GetAllCategories)
 	category_protected_api.GET("/getbycategoryname/:name", drugHandler.GetCategoryByName)
+
+	member_protected_api := router.Group("/members")
+	member_protected_api.Use(jwt.JWTAuthMiddleware())
+	member_protected_api.POST("/create", memberHandler.CreateMember)
+	member_protected_api.GET("/get/:id", memberHandler.GetMemberByID)
+	member_protected_api.PUT("/update/:id", memberHandler.UpdateMember)
+	member_protected_api.DELETE("/delete/:id", memberHandler.DeleteMemberByID)
+	member_protected_api.GET("/getall", memberHandler.GetAllMembers)
+
+	coupon_protected_api := router.Group("/coupons")
+	coupon_protected_api.Use(jwt.JWTAuthMiddleware())
+	coupon_protected_api.POST("/create", memberHandler.CreateMember)
+	coupon_protected_api.GET("/get/:id", memberHandler.GetMemberByID)
+	coupon_protected_api.PUT("/update/:id", memberHandler.UpdateMember)
+	coupon_protected_api.DELETE("/delete/:id", memberHandler.DeleteMemberByID)
+	coupon_protected_api.GET("/getall", memberHandler.GetAllMembers)
+
+	order_protected_api := router.Group("/orders")
+	order_protected_api.Use(jwt.JWTAuthMiddleware())
+	order_protected_api.POST("/create", orderHandler.CreateOrder)
+	order_protected_api.GET("/get/:id", orderHandler.GetOrderByID)
+	order_protected_api.PUT("/update/:id", orderHandler.UpdateOrder)
+	order_protected_api.DELETE("/delete/:id", orderHandler.DeleteOrderByID)
+	order_protected_api.GET("/getall", orderHandler.GetAllOrders)
+
+	orderitem_protected_api := router.Group("/orderitems")
+	orderitem_protected_api.Use(jwt.JWTAuthMiddleware())
+	orderitem_protected_api.POST("/create", orderHandler.CreateOrderItem)
+	orderitem_protected_api.GET("/get/:id", orderHandler.GetOrderItemByID)
+	orderitem_protected_api.PUT("/update/:id", orderHandler.UpdateOrderItem)
+	orderitem_protected_api.DELETE("/delete/:id", orderHandler.DeleteOrderItemByID)
+	orderitem_protected_api.GET("/getall", orderHandler.GetAllOrderItems)
+
+	syslog_protected_api := router.Group("/orderitems")
+	syslog_protected_api.Use(jwt.JWTAuthMiddleware())
+	syslog_protected_api.POST("/create", syslogHandler.CreateSyslog)
+	syslog_protected_api.DELETE("/delete/:id", syslogHandler.DeleteSyslogByID)
+	syslog_protected_api.GET("/getall", syslogHandler.GetAllSyslogs)
 
 	return router
 }
