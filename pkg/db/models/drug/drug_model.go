@@ -7,7 +7,7 @@ import (
 // Category 表示药品的分类
 type Category struct {
 	gorm.Model
-	Name  string `gorm:"type:varchar(100);not null; charset:utf8mb4"`
+	Name  string `gorm:"type:varchar(100); not null; charset:utf8mb4; unique"`
 	Drugs []Drug `gorm:"foreignKey:CategoryID"`
 }
 

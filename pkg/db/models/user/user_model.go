@@ -10,10 +10,10 @@ import (
 // User 用户表
 type User struct {
 	gorm.Model
-	UserName string
+	UserName string `gorm:"not null; unique"`
 	Password string
 	IsAdmin  bool `json:"is_admin"`
-	Avatar string
+	Avatar   string
 }
 
 var c = 0
