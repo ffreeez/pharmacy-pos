@@ -89,7 +89,7 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	orderitem_protected_api.DELETE("/delete/:id", orderHandler.DeleteOrderItemByID)
 	orderitem_protected_api.GET("/getall", orderHandler.GetAllOrderItems)
 
-	syslog_protected_api := router.Group("/orderitems")
+	syslog_protected_api := router.Group("/syslogs")
 	syslog_protected_api.Use(jwt.JWTAuthMiddleware())
 	syslog_protected_api.POST("/create", syslogHandler.CreateSyslog)
 	syslog_protected_api.DELETE("/delete/:id", syslogHandler.DeleteSyslogByID)
