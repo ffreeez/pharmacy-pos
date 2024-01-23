@@ -81,6 +81,17 @@ func GetAllDrugs(db *gorm.DB) ([]drugmodel.Drug, error) {
 	return drugs, nil
 }
 
+func GetDrugByDrugName(db *gorm.DB, drugname string) (*drugmodel.Drug, error) {
+	drug := &drugmodel.Drug{}
+	result := db.Where("name = ?", drugname).Preload("Category").First(drug)
+	if result.Error != nil {
+		logs.Errorf("根据药品名查找药品失败, drugname: %s", drugname)
+		return nil, result.Error
+	}
+	logs.Infof("根据药品名查找药品成功, drugname: %s", drugname)
+	return drug, nil
+}
+
 // GetCategoryByID 根据分类ID获取分类信息
 func GetCategoryByID(db *gorm.DB, id uint) (*drugmodel.Category, error) {
 	category := &drugmodel.Category{}

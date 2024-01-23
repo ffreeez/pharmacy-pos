@@ -1,7 +1,6 @@
 package userhandler
 
 import (
-	"fmt"
 	"strconv"
 
 	usermodel "pharmacy-pos/pkg/db/models/user"
@@ -213,7 +212,6 @@ func (uh *UserHandler) GetUserByUserName(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(username)
 	// 使用用户名获取用户信息
 	user, err := uh.UserService.GetUserByUserName(username)
 	if err != nil {
@@ -236,7 +234,7 @@ func (uh *UserHandler) GetUserByUserName(c *gin.Context) {
 	userResponse := SimplifiedUser{
 		ID:       user.ID,
 		UserName: user.UserName,
-		IsAdmin:  user.IsAdmin, // 假设这是你模型中的字段
+		IsAdmin:  user.IsAdmin,
 	}
 
 	// 如果成功获取到用户信息，返回OK状态码和用户信息

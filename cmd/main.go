@@ -6,7 +6,6 @@ import (
 	drughandler "pharmacy-pos/pkg/handlers/drug"
 	memberhandler "pharmacy-pos/pkg/handlers/member"
 	orderhandler "pharmacy-pos/pkg/handlers/order"
-	sysloghandler "pharmacy-pos/pkg/handlers/syslog"
 	userhandler "pharmacy-pos/pkg/handlers/user"
 	"pharmacy-pos/pkg/middleware/cors"
 	"pharmacy-pos/pkg/middleware/jwt"
@@ -26,7 +25,6 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	drugHandler := drughandler.NewDrugHandler(database)
 	memberHandler := memberhandler.NewMemberHandler(database)
 	orderHandler := orderhandler.NewOrderHandler(database)
-	syslogHandler := sysloghandler.NewSyslogHandler(database)
 
 	router.POST("/login", userHandler.Login)
 
@@ -47,6 +45,7 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	drug_protected_api.PUT("/update/:id", drugHandler.UpdateDrug)
 	drug_protected_api.DELETE("/delete/:id", drugHandler.DeleteDrugByID)
 	drug_protected_api.GET("/getall", drugHandler.GetAllDrugs)
+	drug_protected_api.GET("/getbydrugname/:drugname", drugHandler.GetDrugByDrugName)
 
 	category_protected_api := router.Group("/categories")
 	category_protected_api.Use(jwt.JWTAuthMiddleware())
@@ -88,12 +87,6 @@ func setupRouter(database *gorm.DB) *gin.Engine {
 	orderitem_protected_api.PUT("/update/:id", orderHandler.UpdateOrderItem)
 	orderitem_protected_api.DELETE("/delete/:id", orderHandler.DeleteOrderItemByID)
 	orderitem_protected_api.GET("/getall", orderHandler.GetAllOrderItems)
-
-	syslog_protected_api := router.Group("/syslogs")
-	syslog_protected_api.Use(jwt.JWTAuthMiddleware())
-	syslog_protected_api.POST("/create", syslogHandler.CreateSyslog)
-	syslog_protected_api.DELETE("/delete/:id", syslogHandler.DeleteSyslogByID)
-	syslog_protected_api.GET("/getall", syslogHandler.GetAllSyslogs)
 
 	return router
 }

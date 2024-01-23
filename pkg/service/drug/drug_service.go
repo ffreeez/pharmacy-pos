@@ -42,6 +42,11 @@ func (ds *DrugService) GetAllDrugs() ([]drugmodel.Drug, error) {
 	return drugrepo.GetAllDrugs(ds.DB)
 }
 
+// GetAllDrugs 获取所有药品的信息
+func (ds *DrugService) GetDrugByDrugName(drugname string) (*drugmodel.Drug, error) {
+	return drugrepo.GetDrugByDrugName(ds.DB, drugname)
+}
+
 // GetCategoryByID 根据药品ID获取分类信息
 func (ds *DrugService) GetCategoryByID(id uint) (*drugmodel.Category, error) {
 	return drugrepo.GetCategoryByID(ds.DB, id)

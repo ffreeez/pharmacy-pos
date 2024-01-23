@@ -134,6 +134,52 @@ func (dh *DrugHandler) GetAllDrugs(c *gin.Context) {
 	response.OK(c, drugResponse, "success")
 }
 
+// GetDrugByDrugName 根据药品名获取药品信息
+func (dh *DrugHandler) GetDrugByDrugName(c *gin.Context) {
+	// 从请求参数中获取用户名
+	drugname := c.Param("drugname")
+	if drugname == "" {
+		response.BadRequest(c, "Drugname is required")
+		return
+	}
+
+	// 使用用户名获取用户信息
+	drug, err := dh.DrugService.GetDrugByDrugName(drugname)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			response.NotFound(c, "Drug not found")
+		} else {
+			response.InternalServerError(c, "Failed to get drug information")
+		}
+		return
+	}
+
+	// SimplifiedUser 用于只返回必要的用户信息
+	type SimplifiedDrug struct {
+		ID           uint    `json:"id"`
+		DrugName     string  `json:"name"`
+		Description  string  `json:"description"`
+		CategoryID   uint    `json:"categoryid"`
+		CategoryName string  `json:"categoryname"`
+		Price        float64 `json:"price"`
+		Inventory    uint    `json:"inventory"`
+	}
+
+	// 创建一个用于响应的对象，只包含需要的字段
+	drugResponse := SimplifiedDrug{
+		ID:           drug.ID,
+		DrugName:     drug.Name,
+		Description:  drug.Description,
+		CategoryID:   drug.CategoryID,
+		CategoryName: drug.Category.Name,
+		Price:        drug.Price,
+		Inventory:    drug.Inventory,
+	}
+
+	// 如果成功获取到用户信息，返回OK状态码和用户信息
+	response.OK(c, drugResponse, "success")
+}
+
 // GetCategoryByID 根据分类ID获取分类信息
 func (dh *DrugHandler) GetCategoryByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
