@@ -109,5 +109,5 @@ func main() {
 
 	router := setupRouter(database)
 
-	router.Run(":8080")
+	router.Run(config.AppConfig.Service.ServerPort)
 }

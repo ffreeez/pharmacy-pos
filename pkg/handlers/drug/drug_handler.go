@@ -1,7 +1,6 @@
 package drughandler
 
 import (
-	"fmt"
 	"strconv"
 
 	drugmodel "pharmacy-pos/pkg/db/models/drug"
@@ -50,7 +49,6 @@ func (dh *DrugHandler) CreateDrug(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(drug)
 	err := dh.DrugService.CreateDrug(&drug)
 	if err != nil {
 		response.InternalServerError(c, "Failed to create drug")
@@ -140,7 +138,7 @@ func (dh *DrugHandler) GetAllDrugs(c *gin.Context) {
 func (dh *DrugHandler) GetCategoryByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		response.BadRequest(c, "Invalid drug ID")
+		response.BadRequest(c, "Invalid category ID")
 		return
 	}
 
@@ -220,12 +218,23 @@ func (dh *DrugHandler) UpdateCategory(c *gin.Context) {
 func (dh *DrugHandler) DeleteCategoryByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
-		response.BadRequest(c, "Invalid drug ID")
+		response.BadRequest(c, "Invalid category ID")
 		return
 	}
 
-	drugID := uint(id)
-	err = dh.DrugService.DeleteCategoryByID(drugID)
+	categoryID := uint(id)
+	category, err := dh.DrugService.GetCategoryByID(categoryID)
+	if err != nil {
+		response.InternalServerError(c, "Failed to get category")
+		return
+	}
+
+	if category.Drugs != nil {
+		response.InternalServerError(c, "This category is not empty")
+		return
+	}
+
+	err = dh.DrugService.DeleteCategoryByID(categoryID)
 	if err != nil {
 		response.InternalServerError(c, "Failed to delete category")
 		return

@@ -10,7 +10,7 @@ import (
 type Config struct {
 	Service struct {
 		AppMode    string `yaml:"app_mode"`
-		ServerPort int    `yaml:"server_port"`
+		ServerPort string `yaml:"server_port"`
 	}
 	MySQL struct {
 		Host   string `yaml:"host"`
